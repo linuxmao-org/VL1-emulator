@@ -3,6 +3,7 @@
 
 #include "DistrhoUI.hpp"
 #include "SharedVL1.h"
+#include "utility/CairoExtra.h"
 
 START_NAMESPACE_DISTRHO
 
@@ -27,6 +28,12 @@ protected:
 	bool onMouse(const MouseEvent &ev) override;
 	bool onMotion(const MotionEvent &ev) override;
 	bool onScroll(const ScrollEvent &ev) override;
+
+private:
+	static cairo_surface_t *loadCachedBitmap(unsigned id);
+	static void clearBitmapCache();
+
+	static Size<uint> getBackgroundSize();
 
 private:
 	DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(UIVL1)

@@ -1,14 +1,17 @@
 #include "UIVL1.h"
+#include "UIVL1Defs.h"
 #include "Window.hpp"
 #include "VL1Program.h"
 #include "resource.h"
-
-START_NAMESPACE_DISTRHO
+#include <unordered_map>
+#include <mutex>
+#include <cassert>
 
 // -----------------------------------------------------------------------
 // Init / Deinit
 
-UIVL1::UIVL1() : UI(600, 400)
+UIVL1::UIVL1()
+	: UI(getBackgroundSize().getWidth(), getBackgroundSize().getHeight())
 {
 }
 
@@ -86,10 +89,11 @@ void UIVL1::uiReshape(uint width, uint height)
 */
 void UIVL1::onDisplay()
 {
-
 	cairo_t *cr = getParentWindow().getGraphicsContext().cairo;
 
-	cairo_set_source_rgb(cr, 0, 0, 0);
+	cairo_surface_t *hBackground = loadCachedBitmap(kBackgroundId);
+
+	cairo_set_source_surface(cr, hBackground, 0, 0);
 	cairo_paint(cr);
 }
 
@@ -143,11 +147,46 @@ bool UIVL1::onScroll(const ScrollEvent &ev)
 
 // -----------------------------------------------------------------------
 
-UI *createUI()
+typedef std::unordered_map<unsigned, cairo_surface_u> tBitmapCache;
+static std::mutex bitmapCacheMutex;
+static tBitmapCache bitmapCache;
+
+cairo_surface_t *UIVL1::loadCachedBitmap(unsigned id)
 {
-	return new UIVL1();
+	std::lock_guard<std::mutex> lock(bitmapCacheMutex);
+
+	tBitmapCache::iterator it = bitmapCache.find(id);
+	if (it != bitmapCache.end())
+		return it->second.get();
+
+	cairo_surface_u image{cairo_image_surface_create_from_png_resource(id)};
+	assert(image);
+
+	cairo_surface_t *ret = image.get();
+	bitmapCache[id] = std::move(image);
+	return ret;
+}
+
+void UIVL1::clearBitmapCache()
+{
+	std::lock_guard<std::mutex> lock(bitmapCacheMutex);
+
+	bitmapCache.clear();
 }
 
 // -----------------------------------------------------------------------
 
-END_NAMESPACE_DISTRHO
+Size<uint> UIVL1::getBackgroundSize()
+{
+	cairo_surface_t *img = loadCachedBitmap(kBackgroundId);
+	return Size<uint>(
+		cairo_image_surface_get_width(img),
+		cairo_image_surface_get_height(img));
+}
+
+// -----------------------------------------------------------------------
+
+UI *DISTRHO::createUI()
+{
+	return new UIVL1();
+}

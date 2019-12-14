@@ -69,6 +69,7 @@ FILES_DSP = \
 FILES_UI = \
 	sources/resource.cpp \
 	sources/plugin/UIVL1.cpp \
+	sources/utility/CairoExtra.cpp \
 	gen/VL1EditRes.cpp \
 	$(FILES_SHARED)
 
