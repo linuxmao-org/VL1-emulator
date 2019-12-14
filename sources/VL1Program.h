@@ -33,7 +33,7 @@ public:
 
 	~CVL1Program() {}
 
-	inline float GetParameter(unsigned int i)
+	inline float GetParameter(unsigned int i) const
 	{
 		switch (i)
 		{
@@ -91,9 +91,9 @@ public:
 		SetParameter(kTremolo,p[7]);
 	}
 
-	inline char *GetName() { return m_data.name; }
-	inline void *GetData() { return &m_data; }
-	inline long GetDataSize() { return sizeof(m_data); }
+	inline const char *GetName() const { return m_data.name; }
+	inline const void *GetData() const { return &m_data; }
+	inline static long GetDataSize() { return sizeof(m_data); }
 
 protected:
 	tVL1ProgramData m_data;

@@ -57,12 +57,13 @@ BUILD_LADSPA ?= false
 # --------------------------------------------------------------
 # Files to build
 
-FILES_SHARED =
+FILES_SHARED = \
+	SharedVL1.cpp \
+	sources/VL1Defs.cpp
 
 FILES_DSP = \
 	PluginVL1.cpp \
 	meta/PluginVL1Meta.cpp \
-	sources/VL1Defs.cpp \
 	$(FILES_SHARED)
 
 FILES_UI = \
@@ -75,7 +76,7 @@ FILES_UI = \
 UI_TYPE = cairo
 include ../../dpf/Makefile.plugins.mk
 
-BUILD_CXX_FLAGS += -Imeta
+BUILD_CXX_FLAGS += -Imeta -Isources
 
 # --------------------------------------------------------------
 # Enable all selected plugin types

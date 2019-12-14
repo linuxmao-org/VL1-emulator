@@ -2,6 +2,7 @@
 #define PLUGIN_VL1_H
 
 #include "DistrhoPlugin.hpp"
+#include "SharedVL1.hpp"
 
 START_NAMESPACE_DISTRHO
 
@@ -10,13 +11,6 @@ START_NAMESPACE_DISTRHO
 class PluginVL1 : public Plugin
 {
 public:
-	enum Parameters
-	{
-		paramVolumeLeft = 0,
-		paramVolumeRight,
-		paramCount
-	};
-
 	PluginVL1();
 
 protected:
@@ -61,27 +55,8 @@ protected:
 	// -------------------------------------------------------------------
 
 private:
-	float fParams[paramCount];
-	double fSampleRate;
-
 	DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluginVL1)
 };
-
-struct Preset
-{
-	const char *name;
-	float params[PluginVL1::paramCount];
-};
-
-const Preset factoryPresets[] = {
-    {"Default", {0.2f, 0.2f}}
-    //,{
-    //    "Another preset",  // preset name
-    //    {0.5f, ...}        // array of presetCount float param values
-    //}
-};
-
-const uint presetCount = sizeof(factoryPresets) / sizeof(Preset);
 
 // -----------------------------------------------------------------------
 

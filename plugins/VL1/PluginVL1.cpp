@@ -1,17 +1,15 @@
 #include "PluginVL1.hpp"
+#include "VL1Program.h"
 #include <math.h>
 
 START_NAMESPACE_DISTRHO
 
 // -----------------------------------------------------------------------
 
-PluginVL1::PluginVL1() : Plugin(paramCount, presetCount, 0) // paramCount param(s), presetCount program(s), 0 states
+PluginVL1::PluginVL1() : Plugin(kNumParams, kNumPrograms, 0) // paramCount param(s), presetCount program(s), 0 states
 {
 	sampleRateChanged(getSampleRate());
-	if (presetCount > 0)
-	{
-		loadProgram(0);
-	}
+	loadProgram(0);
 }
 
 // -----------------------------------------------------------------------
@@ -19,23 +17,17 @@ PluginVL1::PluginVL1() : Plugin(paramCount, presetCount, 0) // paramCount param(
 
 void PluginVL1::initParameter(uint32_t index, Parameter &parameter)
 {
-	DISTRHO_SAFE_ASSERT_RETURN(index < paramCount, );
+	DISTRHO_SAFE_ASSERT_RETURN(index < kNumParams, );
+
+#pragma message("TODO implement me")
 
 	parameter.ranges.min = 0.0f;
 	parameter.ranges.max = 1.0f;
-	parameter.ranges.def = 0.1f;
-	parameter.hints = kParameterIsAutomable | kParameterIsLogarithmic;
+	parameter.ranges.def = 0.0f;
+	parameter.hints = kParameterIsAutomable;
 
 	switch (index)
 	{
-	case paramVolumeLeft:
-		parameter.name = "Volume L";
-		parameter.symbol = "volume_l";
-		break;
-	case paramVolumeRight:
-		parameter.name = "Volume R";
-		parameter.symbol = "volume_r";
-		break;
 	default:
 		DISTRHO_SAFE_ASSERT_RETURN(false, );
 	}
@@ -47,9 +39,11 @@ void PluginVL1::initParameter(uint32_t index, Parameter &parameter)
 */
 void PluginVL1::initProgramName(uint32_t index, String &programName)
 {
-	DISTRHO_SAFE_ASSERT_RETURN(index < presetCount, );
+	DISTRHO_SAFE_ASSERT_RETURN(index < kNumPrograms, );
 
-	programName = factoryPresets[index].name;
+	const CVL1Program &program = GetFactoryPresets()[index];
+
+	programName = program.GetName();
 }
 
 // -----------------------------------------------------------------------
@@ -60,7 +54,6 @@ void PluginVL1::initProgramName(uint32_t index, String &programName)
 */
 void PluginVL1::sampleRateChanged(double newSampleRate)
 {
-	fSampleRate = newSampleRate;
 }
 
 /**
@@ -68,7 +61,9 @@ void PluginVL1::sampleRateChanged(double newSampleRate)
 */
 float PluginVL1::getParameterValue(uint32_t index) const
 {
-	return fParams[index];
+#pragma message("TODO implement me")
+
+	return 0;
 }
 
 /**
@@ -76,19 +71,9 @@ float PluginVL1::getParameterValue(uint32_t index) const
 */
 void PluginVL1::setParameterValue(uint32_t index, float value)
 {
-	DISTRHO_SAFE_ASSERT_RETURN(index < paramCount, );
+	DISTRHO_SAFE_ASSERT_RETURN(index < kNumParams, );
 
-	fParams[index] = value;
-
-	switch (index)
-	{
-	case paramVolumeLeft:
-		// do something when volume_r param is set
-		break;
-	case paramVolumeRight:
-		// same for volume_r param
-		break;
-	}
+#pragma message("TODO implement me")
 }
 
 /**
@@ -98,11 +83,13 @@ void PluginVL1::setParameterValue(uint32_t index, float value)
 */
 void PluginVL1::loadProgram(uint32_t index)
 {
-	DISTRHO_SAFE_ASSERT_RETURN(index < presetCount, );
+	DISTRHO_SAFE_ASSERT_RETURN(index < kNumPrograms, );
 
-	for (uint32_t i = 0; i < paramCount; i++)
+	const CVL1Program &program = GetFactoryPresets()[index];
+
+	for (uint32_t param = 0; param < kNumParams; ++param)
 	{
-		setParameterValue(i, factoryPresets[index].params[i]);
+		setParameterValue(param, program.GetParameter(param));
 	}
 }
 
@@ -117,21 +104,9 @@ void PluginVL1::activate()
 void PluginVL1::run(const float **inputs, float **outputs, uint32_t frames, const MidiEvent *midiEvents,
                     uint32_t midiEventCount)
 {
-
-	// get the left and right audio inputs
-	const float *const inpL = inputs[0];
-	const float *const inpR = inputs[1];
-
-	// get the left and right audio outputs
-	float *const outL = outputs[0];
-	float *const outR = outputs[1];
-
-	// apply gain against all samples
-	for (uint32_t i = 0; i < frames; ++i)
-	{
-		outL[i] = inpL[i] * fParams[paramVolumeLeft];
-		outR[i] = inpR[i] * fParams[paramVolumeRight];
-	}
+#pragma message("TODO implement me")
+	memset(outputs[0], 0, frames * sizeof(float));
+	memset(outputs[1], 0, frames * sizeof(float));
 }
 
 // -----------------------------------------------------------------------

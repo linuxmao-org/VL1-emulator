@@ -1,5 +1,6 @@
 #include "UIVL1.hpp"
 #include "Window.hpp"
+#include "VL1Program.h"
 
 START_NAMESPACE_DISTRHO
 
@@ -25,15 +26,10 @@ void UIVL1::parameterChanged(uint32_t index, float value)
 {
 	switch (index)
 	{
-	case PluginVL1::paramVolumeLeft:
-		// do something when volume_l param is set, such as update a widget
-		break;
-	case PluginVL1::paramVolumeRight:
-		// same for volume_r param
-		break;
+#pragma message("TODO implement me")
+		default:
+			(void)value;
 	}
-
-	(void)value;
 }
 
 /**
@@ -42,12 +38,14 @@ void UIVL1::parameterChanged(uint32_t index, float value)
 */
 void UIVL1::programLoaded(uint32_t index)
 {
-	DISTRHO_SAFE_ASSERT_RETURN(index < presetCount, );
+	DISTRHO_SAFE_ASSERT_RETURN(index < kNumPrograms, );
 
-	for (uint32_t i = 0; i < PluginVL1::paramCount; i++)
+	const CVL1Program &program = GetFactoryPresets()[index];
+
+	for (uint32_t i = 0; i < kNumParams; i++)
 	{
 		// set values for each parameter and update their widgets
-		parameterChanged(i, factoryPresets[index].params[i]);
+		parameterChanged(i, program.GetParameter(i));
 	}
 }
 
