@@ -1,4 +1,4 @@
-#include "SharedVL1.hpp"
+#include "SharedVL1.h"
 #include "VL1Program.h"
 #include <array>
 

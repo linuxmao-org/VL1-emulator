@@ -2,7 +2,7 @@
 #define PLUGIN_VL1_H
 
 #include "DistrhoPlugin.hpp"
-#include "SharedVL1.hpp"
+#include "SharedVL1.h"
 
 START_NAMESPACE_DISTRHO
 

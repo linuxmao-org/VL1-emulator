@@ -1,5 +1,6 @@
-#include "PluginVL1.hpp"
+#include "PluginVL1.h"
 #include "VL1Program.h"
+#include <string.h>
 #include <math.h>
 
 START_NAMESPACE_DISTRHO

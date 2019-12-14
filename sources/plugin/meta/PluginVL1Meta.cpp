@@ -1,4 +1,4 @@
-#include "PluginVL1.hpp"
+#include "plugin/PluginVL1.h"
 
 const char *PluginVL1::getLabel() const noexcept
 {

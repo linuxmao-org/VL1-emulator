@@ -2,7 +2,7 @@
 #define UI_VL1_H
 
 #include "DistrhoUI.hpp"
-#include "SharedVL1.hpp"
+#include "SharedVL1.h"
 
 START_NAMESPACE_DISTRHO
 
