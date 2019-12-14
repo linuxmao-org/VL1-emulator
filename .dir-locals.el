@@ -1,0 +1,5 @@
+((prog-mode . ((fill-column . 80)
+               (tab-width . 4)
+               (indent-tabs-mode . t)
+               (c-basic-offset . 4)
+               (c-file-style . "ellemtel"))))
