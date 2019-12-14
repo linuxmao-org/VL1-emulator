@@ -62,6 +62,7 @@ FILES_SHARED =
 FILES_DSP = \
 	PluginVL1.cpp \
 	meta/PluginVL1Meta.cpp \
+	sources/VL1Defs.cpp \
 	$(FILES_SHARED)
 
 FILES_UI = \
