@@ -1,0 +1,197 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+#include "afxres.h"
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+150                     BITMAP  DISCARDABLE     "resources\\casio_vl1_big.bmp"
+151                     BITMAP  DISCARDABLE     "resources\\progsel2.bmp"
+152                     BITMAP  DISCARDABLE     "resources\\octave.bmp"
+153                     BITMAP  DISCARDABLE     "resources\\mode.bmp"
+154                     BITMAP  DISCARDABLE     "resources\\volumeBody.bmp"
+155                     BITMAP  DISCARDABLE     "resources\\volumeHandle.bmp"
+156                     BITMAP  DISCARDABLE     "resources\\balanceBody.bmp"
+157                     BITMAP  DISCARDABLE     "resources\\balanceHandle.bmp"
+158                     BITMAP  DISCARDABLE     "resources\\keyPlusMin.bmp"
+159                     BITMAP  DISCARDABLE     "resources\\keyDot.bmp"
+160                     BITMAP  DISCARDABLE     "resources\\key0.bmp"
+161                     BITMAP  DISCARDABLE     "resources\\key1.bmp"
+162                     BITMAP  DISCARDABLE     "resources\\key2.bmp"
+163                     BITMAP  DISCARDABLE     "resources\\key3.bmp"
+164                     BITMAP  DISCARDABLE     "resources\\key4.bmp"
+165                     BITMAP  DISCARDABLE     "resources\\key5.bmp"
+166                     BITMAP  DISCARDABLE     "resources\\key6.bmp"
+167                     BITMAP  DISCARDABLE     "resources\\key7.bmp"
+168                     BITMAP  DISCARDABLE     "resources\\key8.bmp"
+169                     BITMAP  DISCARDABLE     "resources\\key9.bmp"
+170                     BITMAP  DISCARDABLE     "resources\\keyDiv.bmp"
+171                     BITMAP  DISCARDABLE     "resources\\keyMul.bmp"
+172                     BITMAP  DISCARDABLE     "resources\\keySub.bmp"
+173                     BITMAP  DISCARDABLE     "resources\\keyAdd.bmp"
+174                     BITMAP  DISCARDABLE     "resources\\keyEqual.bmp"
+175                     BITMAP  DISCARDABLE     "resources\\keyG0s.bmp"
+176                     BITMAP  DISCARDABLE     "resources\\keyA0s.bmp"
+177                     BITMAP  DISCARDABLE     "resources\\keyC1s.bmp"
+178                     BITMAP  DISCARDABLE     "resources\\keyD1s.bmp"
+179                     BITMAP  DISCARDABLE     "resources\\keyF1s.bmp"
+180                     BITMAP  DISCARDABLE     "resources\\keyG1s.bmp"
+181                     BITMAP  DISCARDABLE     "resources\\keyA1s.bmp"
+182                     BITMAP  DISCARDABLE     "resources\\keyC2s.bmp"
+183                     BITMAP  DISCARDABLE     "resources\\keyD2s.bmp"
+184                     BITMAP  DISCARDABLE     "resources\\keyF2s.bmp"
+185                     BITMAP  DISCARDABLE     "resources\\keyG2s.bmp"
+186                     BITMAP  DISCARDABLE     "resources\\keyA2s.bmp"
+187                     BITMAP  DISCARDABLE     "resources\\chars.bmp"
+188                     BITMAP  DISCARDABLE     "resources\\dot.bmp"
+189                     BITMAP  DISCARDABLE     "resources\\sharp1.bmp"
+190                     BITMAP  DISCARDABLE     "resources\\sharp2.bmp"
+191                     BITMAP  DISCARDABLE     "resources\\sharp3.bmp"
+192                     BITMAP  DISCARDABLE     "resources\\add.bmp"
+193                     BITMAP  DISCARDABLE     "resources\\sub.bmp"
+194                     BITMAP  DISCARDABLE     "resources\\mul.bmp"
+195                     BITMAP  DISCARDABLE     "resources\\div.bmp"
+196                     BITMAP  DISCARDABLE     "resources\\m.bmp"
+197                     BITMAP  DISCARDABLE     "resources\\k.bmp"
+198                     BITMAP  DISCARDABLE     "resources\\e.bmp"
+199                     BITMAP  DISCARDABLE     "resources\\reset.bmp"
+200                     BITMAP  DISCARDABLE     "resources\\del.bmp"
+201                     BITMAP  DISCARDABLE     "resources\\up.bmp"
+202                     BITMAP  DISCARDABLE     "resources\\down.bmp"
+203                     BITMAP  DISCARDABLE     "resources\\rhythm.bmp"
+204                     BITMAP  DISCARDABLE     "resources\\ml-c.bmp"
+205                     BITMAP  DISCARDABLE     "resources\\music.bmp"
+206                     BITMAP  DISCARDABLE     "resources\\autoplay.bmp"
+207                     BITMAP  DISCARDABLE     "resources\\one_key_play_dot_dot.bmp"
+208                     BITMAP  DISCARDABLE     "resources\\one_key_play_dot.bmp"
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+1 VERSIONINFO
+ FILEVERSION 1,0,0,0
+ PRODUCTVERSION 1,0,0,0
+ FILEFLAGSMASK 0x0L
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "000004e4"
+        BEGIN
+            VALUE "Comments", "\0"
+            VALUE "CompanyName", "Polyvalens\0"
+            VALUE "FileDescription", "VSTi Plug-In\0"
+            VALUE "FileVersion", "1.0\0"
+            VALUE "InternalName", "VL1\0"
+            VALUE "LegalCopyright", "Polyvalens 2004\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "VL1.dll\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "\0"
+            VALUE "ProductVersion", "1, 0, 0, 0\0"
+            VALUE "SpecialBuild", "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0, 1252
+    END
+END
+
+#endif    // !_MAC
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG1 DIALOG DISCARDABLE  0, 0, 187, 95
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,130,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,130,24,50,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_DIALOG1, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 180
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 88
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

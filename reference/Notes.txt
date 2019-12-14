@@ -1,0 +1,11 @@
+About VL1-emulator-v2006-src
+============================
+
+This is reference source code from the project home page.
+http://www.polyvalens.com/blog/vl-1/
+
+The files which are (C) Steinberg Media Technologies have been
+removed, as they are not freely distributable.
+These are part of the VST 2.x developer kit.
+
+License: to be decided (potentially CC0)

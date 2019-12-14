@@ -1,0 +1,99 @@
+TODO
+====
+- program sync between SX main window and instrument GUI. (07/11/2005)
+- ADSR sound should be better. (11/10/2005)
+- clicks between notes when played "quickly" (11/10/2005)
+- octave not right when switching sound when using sound with long release 
+  (fantasy -> violin) Note that fantasy -> guitar is not correct on casio. (11/10/2005)
+- rhythm on seperate channel (02/06/2005)
+- speaker resonance (27/05/2005)
+- tune (27/05/2005)
+- tempo sync (27/05/2005)
+- anti-aliasing (27/05/2005)
+    improved 02/06/2005
+- auto power off (6 min) (27/05/2005)
+- redraw bitmaps readable. (27/05/2005)
+- context sensitive tool tips  (27/05/2005)
+- implement high beep for sequencer full/insert/delete (27/05/2005)
+- implement dot display for sequencer full (27/05/2005)
+
+14/12/2005
+==========
+. rec mode: one key play after reset after recording incorrect (12/12/2005)
+. rec mode: delete doesn't work during recording (12/12/2005)
+
+12/12/2005
+==========
+. retime song after insert/delete (18/11/2005)
+. implement display right scroll when deleting sequencer event (27/05/2005)
+
+08/12/2005
+==========
+. one key play not at right event after insert (18/11/2005)
+
+30/11/2005
+==========
+. one key play should do song reset when pressed while recording (18/11/2005)
+
+18/11/2005
+==========
+. add sequencer state to chunk (07/11/2005)
+
+17/11/2005
+==========
+. calculator: can't enter more than 7 digits for floating point numbers (07/11/2005)
+. lcd: display state not restored (07/11/2005)
+. implement parameter save and restore (11/10/2005)
+
+07/11/2005
+==========
+. implement chunk save & restore (02/11/2005)
+
+03/11/2005
+==========
+. [M] display changes after pressing MR, incorrect for M+ (02/11/2005)
+
+02/11/2005
+==========
+. Display not on when closing and then reopening window of powered on device
+  (verify in Tracktion or Cubase) (11/10/2005)
+. implement automation (11/10/2005)
+. fix program change at startup (init vl1editor correctly) (07/06/2005)
+. electro-sounds 1, 2 & 3 (27/05/2005)
+
+12/10/2005
+==========
+. recorded (demo) song tempo change not working correctly (11/10/2005)
+. rhythm should stop when pressing one key play buttons. To be more precise
+  it should stop when ending the last recorded note (same for autoplay) (11/10/2005)
+. leading zero missing when pressing dot key at beginning of number (11/10/2005)
+. tempo adjust for recorded song (07/06/2005)
+. correct tempo sequencer playback (07/06/2005)
+
+11/10/2005
+==========
+. volume not working for rhythm (11/10/2005)
+. displayed tempo not updated when pressing tempo up/down (11/10/2005)
+. SQRT key not working (11/10/2005)
+. Check % key (11/10/2005)
+
+07/06/2005
+==========
+. demo music (27/05/2005)
+. auto play (27/05/2005)
+. one key play (27/05/2005)
+
+03/06/2005
+==========
+. MC bug immediately after power-on (02/06/2005)
+. inhibit program change during demo song (02/06/2005)
+. program restoration problem after demo song interruption (02/06/2005)
+
+02/06/2005
+==========
+. rhythm level (27/05/2005)
+
+27/05/2005
+==========
+. reset key (27/05/2005)
+. envelope shaping (27/05/2005)
