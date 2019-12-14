@@ -67,7 +67,9 @@ FILES_DSP = \
 	$(FILES_SHARED)
 
 FILES_UI = \
+	sources/resource.cpp \
 	sources/plugin/UIVL1.cpp \
+	gen/VL1EditRes.cpp \
 	$(FILES_SHARED)
 
 # --------------------------------------------------------------
@@ -76,6 +78,7 @@ FILES_UI = \
 UI_TYPE = cairo
 include ../../dpf/Makefile.plugins.mk
 
+BUILD_CXX_FLAGS += -Wno-multichar
 BUILD_CXX_FLAGS += -Isources -Isources/plugin/meta
 
 # --------------------------------------------------------------

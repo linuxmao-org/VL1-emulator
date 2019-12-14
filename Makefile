@@ -17,7 +17,7 @@ libs:
 	$(MAKE) -C dpf/dgl ../build/libdgl-cairo.a
 #	$(MAKE) -C dpf/dgl ../build/libdgl-opengl.a
 
-plugins: libs
+plugins: libs res
 	$(MAKE) all -C plugins/VL1
 
 ifneq ($(CROSS_COMPILING),true)
@@ -39,11 +39,21 @@ endif
 
 # --------------------------------------------------------------
 
+PYTHON ?= python
+
+res: gen/VL1EditRes.cpp
+
+gen/VL1EditRes.cpp: resources/VL1EditRes.json
+	@install -d gen
+	$(PYTHON) ./utils/rescc.py $^ > $@
+
+# --------------------------------------------------------------
+
 clean:
 	$(MAKE) clean -C dpf/dgl
 	$(MAKE) clean -C dpf/utils/lv2-ttl-generator
 	$(MAKE) clean -C plugins/VL1
-	rm -rf bin build
+	rm -rf bin build gen
 
 install: all
 	$(MAKE) install -C plugins/VL1
@@ -53,4 +63,4 @@ install-user: all
 
 # --------------------------------------------------------------
 
-.PHONY: all clean install install-user submodule libs plugins gen
+.PHONY: all clean install install-user submodule libs plugins gen res

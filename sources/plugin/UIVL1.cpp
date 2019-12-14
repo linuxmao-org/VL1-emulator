@@ -1,6 +1,7 @@
 #include "UIVL1.h"
 #include "Window.hpp"
 #include "VL1Program.h"
+#include "resource.h"
 
 START_NAMESPACE_DISTRHO
 
