@@ -14,7 +14,8 @@ submodules:
 	git submodule update --init --recursive
 
 libs:
-	$(MAKE) -C dpf/dgl
+	$(MAKE) -C dpf/dgl ../build/libdgl-cairo.a
+#	$(MAKE) -C dpf/dgl ../build/libdgl-opengl.a
 
 plugins: libs
 	$(MAKE) all -C plugins/VL1
