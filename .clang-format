@@ -1,0 +1,6 @@
+﻿---
+BasedOnStyle: Microsoft
+AccessModifierOffset: '-4'
+UseTab: ForIndentation
+
+...
