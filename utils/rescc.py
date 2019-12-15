@@ -3,7 +3,11 @@
 
 import os
 import sys
-import json
+try:
+    import json
+    HAVE_JSON = True
+except ImportError:
+    HAVE_JSON = False
 
 if len(sys.argv) != 2:
     sys.stderr.write('Please indicate the path of Res.json.\n')
@@ -12,7 +16,11 @@ if len(sys.argv) != 2:
 def main():
     res_out = sys.stdout
     res_dict_filename = sys.argv[1]
-    res_dict = json.loads(open(res_dict_filename, 'r').read())
+    if HAVE_JSON:
+        res_dict = json.loads(open(res_dict_filename, 'r').read())
+    else:
+        # eval fallback for old python, to fix the CI. only open trusted files
+        res_dict = eval(open(res_dict_filename, 'r').read())
 
     res_lengths = {}
 
@@ -23,18 +31,19 @@ def main():
 
         res_out.write('static const unsigned char res_%d[] = {' % (res_id))
         res_length = 0
-        with open(res_path, 'rb') as res_in:
-            while True:
-                buf = res_in.read(8192)
-                if not buf:
-                    break
-                res_length += len(buf)
-                if sys.version_info[0] < 3:
-                    for byte in buf:
-                        res_out.write('%d,' % (ord(byte)))
-                else:
-                    for byte in buf:
-                        res_out.write('%d,' % (byte))
+        res_in = open(res_path, 'rb')
+        while True:
+            buf = res_in.read(8192)
+            if not buf:
+                break
+            res_length += len(buf)
+            if sys.version_info[0] < 3:
+                for byte in buf:
+                    res_out.write('%d,' % (ord(byte)))
+            else:
+                for byte in buf:
+                    res_out.write('%d,' % (byte))
+        res_in.close()
         res_out.write('};\n')
         res_lengths[res_id] = res_length
 
