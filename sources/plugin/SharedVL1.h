@@ -1,7 +1,11 @@
 #pragma once
 #include "VL1Defs.h"
-#include "DistrhoUtils.hpp"
+#include "DistrhoPlugin.hpp"
 
 class CVL1Program;
 
-const CVL1Program *GetFactoryPresets();
+namespace SharedVL1
+{
+	const CVL1Program *GetFactoryPresets();
+	void InitParameter(uint32_t index, Parameter &parameter);
+}

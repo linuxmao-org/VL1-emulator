@@ -111,7 +111,7 @@ void UIVL1::programLoaded(uint32_t index)
 {
 	DISTRHO_SAFE_ASSERT_RETURN(index < kNumPrograms, );
 
-	const CVL1Program &program = GetFactoryPresets()[index];
+	const CVL1Program &program = SharedVL1::GetFactoryPresets()[index];
 
 	for (uint32_t i = 0; i < kNumParams; i++)
 	{

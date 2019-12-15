@@ -16,20 +16,7 @@ PluginVL1::PluginVL1() : Plugin(kNumParams, kNumPrograms, 0) // paramCount param
 
 void PluginVL1::initParameter(uint32_t index, Parameter &parameter)
 {
-	DISTRHO_SAFE_ASSERT_RETURN(index < kNumParams, );
-
-#pragma message("TODO implement me")
-
-	parameter.ranges.min = 0.0f;
-	parameter.ranges.max = 1.0f;
-	parameter.ranges.def = 0.0f;
-	parameter.hints = kParameterIsAutomable;
-
-	switch (index)
-	{
-	default:
-		DISTRHO_SAFE_ASSERT_RETURN(false, );
-	}
+	SharedVL1::InitParameter(index, parameter);
 }
 
 /**
@@ -40,7 +27,7 @@ void PluginVL1::initProgramName(uint32_t index, String &programName)
 {
 	DISTRHO_SAFE_ASSERT_RETURN(index < kNumPrograms, );
 
-	const CVL1Program &program = GetFactoryPresets()[index];
+	const CVL1Program &program = SharedVL1::GetFactoryPresets()[index];
 
 	programName = program.GetName();
 }
@@ -84,7 +71,7 @@ void PluginVL1::loadProgram(uint32_t index)
 {
 	DISTRHO_SAFE_ASSERT_RETURN(index < kNumPrograms, );
 
-	const CVL1Program &program = GetFactoryPresets()[index];
+	const CVL1Program &program = SharedVL1::GetFactoryPresets()[index];
 
 	for (uint32_t param = 0; param < kNumParams; ++param)
 	{
