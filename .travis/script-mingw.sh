@@ -50,4 +50,5 @@ sed -i 's/"$GEN"/wine "$GEN"/g' dpf/utils/generate-ttl.sh
 # ---------------------------------------------------------------------------------------------------------------------
 # build the plugin
 
-CROSS_COMPILING=true WINDOWS=true make $MAKE_ARGS
+# TODO skipped LV2 build
+CROSS_COMPILING=true WINDOWS=true BUILD_LV2=false make $MAKE_ARGS
