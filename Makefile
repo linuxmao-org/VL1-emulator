@@ -39,13 +39,14 @@ endif
 
 # --------------------------------------------------------------
 
-PYTHON ?= python
-
 res: gen/VL1EditRes.cpp
 
-gen/VL1EditRes.cpp: resources/VL1EditRes.json
+gen/VL1EditRes.cpp: resources/VL1EditRes.json utils/bin/rescc$(APP_EXT)
 	@install -d gen
-	$(PYTHON) ./utils/rescc.py $^ > $@
+	utils/bin/rescc$(APP_EXT) $< > $@
+
+utils/bin/rescc$(APP_EXT):
+	$(MAKE) bin/rescc$(APP_EXT) -C utils
 
 # --------------------------------------------------------------
 
@@ -53,6 +54,7 @@ clean:
 	$(MAKE) clean -C dpf/dgl
 	$(MAKE) clean -C dpf/utils/lv2-ttl-generator
 	$(MAKE) clean -C plugins/VL1
+	$(MAKE) clean -C utils
 	rm -rf bin build gen
 
 install: all
