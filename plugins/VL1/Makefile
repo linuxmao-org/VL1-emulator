@@ -65,8 +65,14 @@ FILES_SHARED = \
 	sources/plugin/SharedVL1.cpp
 
 FILES_DSP = \
+	sources/ADSR.cpp \
+	sources/EnvelopeShaper.cpp \
 	sources/Filters.cpp \
+	sources/LFO.cpp \
+	sources/LineInTime.cpp \
 	sources/Noise.cpp \
+	sources/Voice.cpp \
+	sources/Wave.cpp \
 	sources/plugin/PluginVL1.cpp \
 	sources/plugin/meta/PluginVL1Meta.cpp \
 	$(FILES_SHARED)
