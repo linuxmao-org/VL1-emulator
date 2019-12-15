@@ -7,6 +7,9 @@
 #include <list>
 
 class KickButton;
+class MultiSwitch;
+class Slider;
+class CLcd;
 
 class UIVL1 : public UI
 {
@@ -31,25 +34,18 @@ protected:
 	bool onScroll(const ScrollEvent &ev) override;
 
 private:
-	static cairo_surface_t *loadCachedBitmap(unsigned id);
-	static void clearBitmapCache();
-
 	static Size<uint> getBackgroundSize();
 
 private:
-	#pragma message("TODO implement these components: slider, switch, button")
-	typedef Widget CHorizontalSlider;
-	typedef Widget CHorizontalSwitch;
-
 	void AddKey(int id, int idBmp, int x, int y, int nBmp, KickButton **ppKey);
-	void AddHorizontalSwitch(int id, int idBmp, int x, int y, int nPos, int nBmp, CHorizontalSwitch **ppControl);
-	void AddHorizontalSlider(int id, int idBmpBody, int idBmpHandle, int x, int y, CHorizontalSlider **ppControl);
+	void AddHorizontalSwitch(int id, int idBmp, int x, int y, int nPos, int nBmp, MultiSwitch **ppControl);
+	void AddHorizontalSlider(int id, int idBmpBody, int idBmpHandle, int x, int y, Slider **ppControl);
 
-	CHorizontalSlider *m_pVolume;
-	CHorizontalSlider *m_pBalance;
-	CHorizontalSwitch *m_pProgramSelector;
-	CHorizontalSwitch *m_pOctave;
-	CHorizontalSwitch *m_pMode;
+	Slider *m_pVolume;
+	Slider *m_pBalance;
+	MultiSwitch *m_pProgramSelector;
+	MultiSwitch *m_pOctave;
+	MultiSwitch *m_pMode;
 
 	KickButton *m_pBlackWhiteKey[29]; // 17 white + 12 black keys
 	KickButton *m_pKeyReset;
@@ -62,6 +58,8 @@ private:
 	KickButton *m_pKeyAutoPlay;
 	KickButton *m_pKeyOneKeyPlay2;
 	KickButton *m_pKeyOneKeyPlay1;
+
+	CLcd *m_lcd;
 
 	std::list<std::unique_ptr<Widget>> m_subWidgets;
 

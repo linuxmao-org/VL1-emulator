@@ -81,10 +81,13 @@ FILES_DSP = \
 FILES_UI = \
 	sources/resource.cpp \
 	sources/plugin/UIVL1.cpp \
+	sources/ui/BitmapCache.cpp \
 	sources/ui/ImageSkin.cpp \
+	sources/ui/ImageLabel.cpp \
 	sources/ui/KickButton.cpp \
 	sources/ui/MultiSwitch.cpp \
 	sources/ui/Slider.cpp \
+	sources/ui/Lcd.cpp \
 	sources/utility/CairoExtra.cpp \
 	gen/VL1EditRes.cpp \
 	$(FILES_SHARED)

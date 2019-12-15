@@ -3,12 +3,12 @@
 #include "Window.hpp"
 #include "VL1Program.h"
 #include "resource.h"
+#include "ui/BitmapCache.h"
 #include "ui/KickButton.h"
 #include "ui/MultiSwitch.h"
 #include "ui/Slider.h"
-#include <unordered_map>
-#include <mutex>
-#include <cassert>
+#include "ui/Lcd.h"
+#include <assert.h>
 
 // -----------------------------------------------------------------------
 // Init / Deinit
@@ -76,6 +76,10 @@ UIVL1::UIVL1()
 	AddKey(kKeyAutoPlay,kKeyAutoPlayId,kKeyAutoPlayX,kKeyAutoPlayY,kKeyN,&m_pKeyAutoPlay);
 	AddKey(kKeyOneKeyPlayDotDot,kKeyOneKeyPlayDotDotId,kKeyOneKeyPlayDotDotX,kKeyOneKeyPlayDotDotY,kKeyN,&m_pKeyOneKeyPlay1);
 	AddKey(kKeyOneKeyPlayDot,kKeyOneKeyPlayDotId,kKeyOneKeyPlayDotX,kKeyOneKeyPlayDotY,kKeyN,&m_pKeyOneKeyPlay2);
+
+	// Display
+	m_lcd = new CLcd(this);
+	m_lcd->setSize(getWidth(), getHeight());
 }
 
 UIVL1::~UIVL1()
@@ -154,7 +158,7 @@ void UIVL1::onDisplay()
 {
 	cairo_t *cr = getParentWindow().getGraphicsContext().cairo;
 
-	cairo_surface_t *hBackground = loadCachedBitmap(kBackgroundId);
+	cairo_surface_t *hBackground = BitmapCache::load(kBackgroundId);
 
 	cairo_set_source_surface(cr, hBackground, 0, 0);
 	cairo_paint(cr);
@@ -213,7 +217,7 @@ bool UIVL1::onScroll(const ScrollEvent &ev)
 void UIVL1::AddKey(int id, int idBmp, int x, int y, int nBmp, KickButton **ppKey)
 {
 	assert(ppKey);
-	cairo_surface_t *hBmp = loadCachedBitmap(idBmp);
+	cairo_surface_t *hBmp = BitmapCache::load(idBmp);
 	ImageSkin skin(hBmp, nBmp);
 	KickButton *key = new KickButton(skin, this);
 	m_subWidgets.emplace_back(key);
@@ -221,10 +225,10 @@ void UIVL1::AddKey(int id, int idBmp, int x, int y, int nBmp, KickButton **ppKey
 	*ppKey = key;
 }
 
-void UIVL1::AddHorizontalSwitch(int id, int idBmp, int x, int y, int nPos, int nBmp, CHorizontalSwitch **ppControl)
+void UIVL1::AddHorizontalSwitch(int id, int idBmp, int x, int y, int nPos, int nBmp, MultiSwitch **ppControl)
 {
 	assert(ppControl);
-	cairo_surface_t *hBmp = loadCachedBitmap(idBmp);
+	cairo_surface_t *hBmp = BitmapCache::load(idBmp);
 	ImageSkin skin(hBmp, nBmp);
 	MultiSwitch *sw = new MultiSwitch(skin, this);
 	m_subWidgets.emplace_back(sw);
@@ -233,11 +237,11 @@ void UIVL1::AddHorizontalSwitch(int id, int idBmp, int x, int y, int nPos, int n
 	*ppControl = sw;
 }
 
-void UIVL1::AddHorizontalSlider(int id, int idBmpBody, int idBmpHandle, int x, int y, CHorizontalSlider **ppControl)
+void UIVL1::AddHorizontalSlider(int id, int idBmpBody, int idBmpHandle, int x, int y, Slider **ppControl)
 {
 	assert(ppControl);
-	cairo_surface_t *hBmpBody = loadCachedBitmap(idBmpBody);
-	cairo_surface_t *hBmpHandle = loadCachedBitmap(idBmpHandle);
+	cairo_surface_t *hBmpBody = BitmapCache::load(idBmpBody);
+	cairo_surface_t *hBmpHandle = BitmapCache::load(idBmpHandle);
 	Slider *slider = new Slider(hBmpBody, hBmpHandle, this);
 	m_subWidgets.emplace_back(slider);
 	slider->setAbsolutePos(x, y);
@@ -246,38 +250,9 @@ void UIVL1::AddHorizontalSlider(int id, int idBmpBody, int idBmpHandle, int x, i
 
 // -----------------------------------------------------------------------
 
-typedef std::unordered_map<unsigned, cairo_surface_u> tBitmapCache;
-static std::mutex bitmapCacheMutex;
-static tBitmapCache bitmapCache;
-
-cairo_surface_t *UIVL1::loadCachedBitmap(unsigned id)
-{
-	std::lock_guard<std::mutex> lock(bitmapCacheMutex);
-
-	tBitmapCache::iterator it = bitmapCache.find(id);
-	if (it != bitmapCache.end())
-		return it->second.get();
-
-	cairo_surface_u image{cairo_image_surface_create_from_png_resource(id)};
-	assert(image);
-
-	cairo_surface_t *ret = image.get();
-	bitmapCache[id] = std::move(image);
-	return ret;
-}
-
-void UIVL1::clearBitmapCache()
-{
-	std::lock_guard<std::mutex> lock(bitmapCacheMutex);
-
-	bitmapCache.clear();
-}
-
-// -----------------------------------------------------------------------
-
 Size<uint> UIVL1::getBackgroundSize()
 {
-	cairo_surface_t *img = loadCachedBitmap(kBackgroundId);
+	cairo_surface_t *img = BitmapCache::load(kBackgroundId);
 	return Size<uint>(
 		cairo_image_surface_get_width(img),
 		cairo_image_surface_get_height(img));
