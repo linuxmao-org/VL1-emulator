@@ -4,6 +4,7 @@
 #include "VL1Program.h"
 #include "resource.h"
 #include "ui/KickButton.h"
+#include "ui/MultiSwitch.h"
 #include "ui/Slider.h"
 #include <unordered_map>
 #include <mutex>
@@ -222,9 +223,14 @@ void UIVL1::AddKey(int id, int idBmp, int x, int y, int nBmp, KickButton **ppKey
 
 void UIVL1::AddHorizontalSwitch(int id, int idBmp, int x, int y, int nPos, int nBmp, CHorizontalSwitch **ppControl)
 {
-#pragma message("TODO implement AddHorizontalSwitch")
-	
-	
+	assert(ppControl);
+	cairo_surface_t *hBmp = loadCachedBitmap(idBmp);
+	ImageSkin skin(hBmp, nBmp);
+	MultiSwitch *sw = new MultiSwitch(skin, this);
+	m_subWidgets.emplace_back(sw);
+	sw->setAbsolutePos(x, y);
+	sw->setNumSteps(nPos);
+	*ppControl = sw;
 }
 
 void UIVL1::AddHorizontalSlider(int id, int idBmpBody, int idBmpHandle, int x, int y, CHorizontalSlider **ppControl)

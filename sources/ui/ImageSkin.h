@@ -14,6 +14,8 @@ public:
 	ImageSkin(const ImageSkin &other);
 	ImageSkin &operator=(const ImageSkin &other);
 
+	unsigned getImageCount() const;
+
 	cairo_surface_t *getImageForRatio(double ratio) const;
 
 	unsigned getWidth() const;

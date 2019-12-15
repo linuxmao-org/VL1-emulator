@@ -1,12 +1,13 @@
 #pragma once
+#include "ImageSkin.h"
 #include "Widget.hpp"
 #include "utility/CairoExtra.h"
 #include <functional>
 
-class Slider : public Widget
+class MultiSwitch : public Widget
 {
 public:
-	Slider(cairo_surface_t *imgBody, cairo_surface_t *imgHandle, Widget *group);
+	MultiSwitch(ImageSkin skin, Widget *group);
 
 	enum Orientation
 	{
@@ -41,6 +42,5 @@ private:
 	Orientation fOrientation = Horizontal;
 	bool fValueNotify = true;
 	bool fIsDragging = false;
-	cairo_surface_t *fImgBody = nullptr;
-	cairo_surface_t *fImgHandle = nullptr;
+	ImageSkin fSkin;
 };

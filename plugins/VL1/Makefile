@@ -71,6 +71,7 @@ FILES_UI = \
 	sources/plugin/UIVL1.cpp \
 	sources/ui/ImageSkin.cpp \
 	sources/ui/KickButton.cpp \
+	sources/ui/MultiSwitch.cpp \
 	sources/ui/Slider.cpp \
 	sources/utility/CairoExtra.cpp \
 	gen/VL1EditRes.cpp \

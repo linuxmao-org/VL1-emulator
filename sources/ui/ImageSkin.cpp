@@ -32,6 +32,11 @@ ImageSkin &ImageSkin::operator=(const ImageSkin &other)
 	return *this;
 }
 
+unsigned ImageSkin::getImageCount() const
+{
+	return fImageCount;
+}
+
 cairo_surface_t *ImageSkin::getImageForRatio(double ratio) const
 {
 	if (!fSubSurface)
