@@ -58,10 +58,15 @@ BUILD_LADSPA ?= false
 # Files to build
 
 FILES_SHARED = \
+	sources/Calculator.cpp \
+	sources/Utils.cpp \
 	sources/VL1Defs.cpp \
+	sources/VL1String.cpp \
 	sources/plugin/SharedVL1.cpp
 
 FILES_DSP = \
+	sources/Filters.cpp \
+	sources/Noise.cpp \
 	sources/plugin/PluginVL1.cpp \
 	sources/plugin/meta/PluginVL1Meta.cpp \
 	$(FILES_SHARED)
