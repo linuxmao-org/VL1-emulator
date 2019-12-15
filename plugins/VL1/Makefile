@@ -69,6 +69,9 @@ FILES_DSP = \
 FILES_UI = \
 	sources/resource.cpp \
 	sources/plugin/UIVL1.cpp \
+	sources/ui/ImageSkin.cpp \
+	sources/ui/KickButton.cpp \
+	sources/ui/Slider.cpp \
 	sources/utility/CairoExtra.cpp \
 	gen/VL1EditRes.cpp \
 	$(FILES_SHARED)

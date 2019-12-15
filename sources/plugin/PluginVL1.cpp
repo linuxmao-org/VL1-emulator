@@ -3,8 +3,6 @@
 #include <string.h>
 #include <math.h>
 
-START_NAMESPACE_DISTRHO
-
 // -----------------------------------------------------------------------
 
 PluginVL1::PluginVL1() : Plugin(kNumParams, kNumPrograms, 0) // paramCount param(s), presetCount program(s), 0 states
@@ -112,11 +110,9 @@ void PluginVL1::run(const float **inputs, float **outputs, uint32_t frames, cons
 
 // -----------------------------------------------------------------------
 
-Plugin *createPlugin()
+Plugin *DISTRHO::createPlugin()
 {
 	return new PluginVL1();
 }
 
 // -----------------------------------------------------------------------
-
-END_NAMESPACE_DISTRHO

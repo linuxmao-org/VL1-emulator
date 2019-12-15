@@ -4,8 +4,6 @@
 #include "DistrhoPlugin.hpp"
 #include "SharedVL1.h"
 
-START_NAMESPACE_DISTRHO
-
 // -----------------------------------------------------------------------
 
 class PluginVL1 : public Plugin
@@ -59,7 +57,5 @@ private:
 };
 
 // -----------------------------------------------------------------------
-
-END_NAMESPACE_DISTRHO
 
 #endif // #ifndef PLUGIN_VL1_H

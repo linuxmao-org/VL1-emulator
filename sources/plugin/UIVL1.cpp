@@ -3,6 +3,8 @@
 #include "Window.hpp"
 #include "VL1Program.h"
 #include "resource.h"
+#include "ui/KickButton.h"
+#include "ui/Slider.h"
 #include <unordered_map>
 #include <mutex>
 #include <cassert>
@@ -13,6 +15,66 @@
 UIVL1::UIVL1()
 	: UI(getBackgroundSize().getWidth(), getBackgroundSize().getHeight())
 {
+	// Program Select switch
+	AddHorizontalSwitch(kProgram,kProgSelId,kProgSelX,kProgSelY,kProgSelN,kProgSelN,&m_pProgramSelector);
+
+	// Octave switch
+	AddHorizontalSwitch(kOctave,kOctaveId,kOctaveX,kOctaveY,kOctaveN,kOctaveN,&m_pOctave);
+
+	// Mode switch
+	AddHorizontalSwitch(kMode,kModeId,kModeX,kModeY,kModeN,kModeN,&m_pMode);
+
+	// Volume slider
+	AddHorizontalSlider(kVolume,kVolumeBodyId,kVolumeHandleId,kVolumeX,kVolumeY,&m_pVolume);
+
+	// Balance slider
+	AddHorizontalSlider(kBalance,kBalanceBodyId,kBalanceHandleId,kBalanceX,kBalanceY,&m_pBalance);
+
+	// Tune control
+	//AddKnob(kTune,kTuneBodyId,kTuneHandleId,kTuneX,kTuneY,&m_pTune);
+
+	// Keyboard
+	AddKey(kKeyPlusMin,kKeyPlusMinId,kKeyPlusMinX,kKeyPlusMinY,kKeyN,&m_pBlackWhiteKey[0]);
+	AddKey(kKeyPlusMinS,kKeyG0sId,kKeyG0sX,kKeyG0sY,kKeyN,&m_pBlackWhiteKey[1]);
+	AddKey(kKeyDot,kKeyDotId,kKeyDotX,kKeyDotY,kKeyN,&m_pBlackWhiteKey[2]);
+	AddKey(kKeyDotS,kKeyA0sId,kKeyA0sX,kKeyA0sY,kKeyN,&m_pBlackWhiteKey[3]);
+	AddKey(kKey0,kKey0Id,kKey0X,kKey0Y,kKeyN,&m_pBlackWhiteKey[4]);
+	AddKey(kKey1,kKey1Id,kKey1X,kKey1Y,kKeyN,&m_pBlackWhiteKey[5]);
+	AddKey(kKey1S,kKeyC1sId,kKeyC1sX,kKeyC1sY,kKeyN,&m_pBlackWhiteKey[6]);
+	AddKey(kKey2,kKey2Id,kKey2X,kKey2Y,kKeyN,&m_pBlackWhiteKey[7]);
+	AddKey(kKey2S,kKeyD1sId,kKeyD1sX,kKeyD1sY,kKeyN,&m_pBlackWhiteKey[8]);
+	AddKey(kKey3,kKey3Id,kKey3X,kKey3Y,kKeyN,&m_pBlackWhiteKey[9]);
+	AddKey(kKey4,kKey4Id,kKey4X,kKey4Y,kKeyN,&m_pBlackWhiteKey[10]);
+	AddKey(kKey4S,kKeyF1sId,kKeyF1sX,kKeyF1sY,kKeyN,&m_pBlackWhiteKey[11]);
+	AddKey(kKey5,kKey5Id,kKey5X,kKey5Y,kKeyN,&m_pBlackWhiteKey[12]);
+	AddKey(kKey5S,kKeyG1sId,kKeyG1sX,kKeyG1sY,kKeyN,&m_pBlackWhiteKey[13]);
+	AddKey(kKey6,kKey6Id,kKey6X,kKey6Y,kKeyN,&m_pBlackWhiteKey[14]);
+	AddKey(kKey6S,kKeyA1sId,kKeyA1sX,kKeyA1sY,kKeyN,&m_pBlackWhiteKey[15]);
+	AddKey(kKey7,kKey7Id,kKey7X,kKey7Y,kKeyN,&m_pBlackWhiteKey[16]);
+	AddKey(kKey8,kKey8Id,kKey8X,kKey8Y,kKeyN,&m_pBlackWhiteKey[17]);
+	AddKey(kKey8S,kKeyC2sId,kKeyC2sX,kKeyC2sY,kKeyN,&m_pBlackWhiteKey[18]);
+	AddKey(kKey9,kKey9Id,kKey9X,kKey9Y,kKeyN,&m_pBlackWhiteKey[19]);
+	AddKey(kKey9S,kKeyD2sId,kKeyD2sX,kKeyD2sY,kKeyN,&m_pBlackWhiteKey[20]);
+	AddKey(kKeyDiv,kKeyDivId,kKeyDivX,kKeyDivY,kKeyN,&m_pBlackWhiteKey[21]);
+	AddKey(kKeyMul,kKeyMulId,kKeyMulX,kKeyMulY,kKeyN,&m_pBlackWhiteKey[22]);
+	AddKey(kKeyMulS,kKeyF2sId,kKeyF2sX,kKeyF2sY,kKeyN,&m_pBlackWhiteKey[23]);
+	AddKey(kKeySub,kKeySubId,kKeySubX,kKeySubY,kKeyN,&m_pBlackWhiteKey[24]);
+	AddKey(kKeySubS,kKeyG2sId,kKeyG2sX,kKeyG2sY,kKeyN,&m_pBlackWhiteKey[25]);
+	AddKey(kKeyAdd,kKeyAddId,kKeyAddX,kKeyAddY,kKeyN,&m_pBlackWhiteKey[26]);
+	AddKey(kKeyAddS,kKeyA2sId,kKeyA2sX,kKeyA2sY,kKeyN,&m_pBlackWhiteKey[27]);
+	AddKey(kKeyEqual,kKeyEqualId,kKeyEqualX,kKeyEqualY,kKeyN,&m_pBlackWhiteKey[28]);
+
+	// Small keys
+	AddKey(kKeyReset,kKeyResetId,kKeyResetX,kKeyResetY,kKeyN,&m_pKeyReset);
+	AddKey(kKeyDel,kKeyDelId,kKeyDelX,kKeyDelY,kKeyN,&m_pKeyDel);
+	AddKey(kKeyTempoUp,kKeyTempoUpId,kKeyTempoUpX,kKeyTempoUpY,kKeyN,&m_pKeyTempoUp);
+	AddKey(kKeyTempoDown,kKeyTempoDownId,kKeyTempoDownX,kKeyTempoDownY,kKeyN,&m_pKeyTempoDown);
+	AddKey(kKeyRhythm,kKeyRhythmId,kKeyRhythmX,kKeyRhythmY,kKeyN,&m_pKeyRhythm);
+	AddKey(kKeyMLC,kKeyMLCId,kKeyMLCX,kKeyMLCY,kKeyN,&m_pKeyMLC);
+	AddKey(kKeyMusic,kKeyMusicId,kKeyMusicX,kKeyMusicY,kKeyN,&m_pKeyMusic);
+	AddKey(kKeyAutoPlay,kKeyAutoPlayId,kKeyAutoPlayX,kKeyAutoPlayY,kKeyN,&m_pKeyAutoPlay);
+	AddKey(kKeyOneKeyPlayDotDot,kKeyOneKeyPlayDotDotId,kKeyOneKeyPlayDotDotX,kKeyOneKeyPlayDotDotY,kKeyN,&m_pKeyOneKeyPlay1);
+	AddKey(kKeyOneKeyPlayDot,kKeyOneKeyPlayDotId,kKeyOneKeyPlayDotX,kKeyOneKeyPlayDotY,kKeyN,&m_pKeyOneKeyPlay2);
 }
 
 UIVL1::~UIVL1()
@@ -143,6 +205,37 @@ bool UIVL1::onScroll(const ScrollEvent &ev)
 {
 	return false;
 	(void)ev;
+}
+
+// -----------------------------------------------------------------------
+
+void UIVL1::AddKey(int id, int idBmp, int x, int y, int nBmp, KickButton **ppKey)
+{
+	assert(ppKey);
+	cairo_surface_t *hBmp = loadCachedBitmap(idBmp);
+	ImageSkin skin(hBmp, nBmp);
+	KickButton *key = new KickButton(skin, this);
+	m_subWidgets.emplace_back(key);
+	key->setAbsolutePos(x, y);
+	*ppKey = key;
+}
+
+void UIVL1::AddHorizontalSwitch(int id, int idBmp, int x, int y, int nPos, int nBmp, CHorizontalSwitch **ppControl)
+{
+#pragma message("TODO implement AddHorizontalSwitch")
+	
+	
+}
+
+void UIVL1::AddHorizontalSlider(int id, int idBmpBody, int idBmpHandle, int x, int y, CHorizontalSlider **ppControl)
+{
+	assert(ppControl);
+	cairo_surface_t *hBmpBody = loadCachedBitmap(idBmpBody);
+	cairo_surface_t *hBmpHandle = loadCachedBitmap(idBmpHandle);
+	Slider *slider = new Slider(hBmpBody, hBmpHandle, this);
+	m_subWidgets.emplace_back(slider);
+	slider->setAbsolutePos(x, y);
+	*ppControl = slider;
 }
 
 // -----------------------------------------------------------------------
