@@ -67,6 +67,7 @@ FILES_SHARED = \
 FILES_DSP = \
 	sources/ADSR.cpp \
 	sources/EnvelopeShaper.cpp \
+	sources/EventManager.cpp \
 	sources/Filters.cpp \
 	sources/LFO.cpp \
 	sources/LineInTime.cpp \
