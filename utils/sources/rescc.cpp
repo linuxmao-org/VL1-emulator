@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 	if (res_dict_dirname.empty())
 		res_dict_dirname = "./";
 
-    std::unordered_map<unsigned, unsigned> res_lengths;
+	std::unordered_map<unsigned, unsigned> res_lengths;
 
 	for (const auto &item : res_dict.items())
 	{
