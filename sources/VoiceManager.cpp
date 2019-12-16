@@ -38,9 +38,9 @@ void CVoiceManager::Setup(CLcdBuffer *lcd, CRhythm *rhythm)
 void CVoiceManager::Initialize()
 {
 	m_maxVoice = 0;
-	m_pVoice = NULL;
+	m_pVoice = nullptr;
 	m_maxNote = 128;
-	m_pNote = NULL;
+	m_pNote = nullptr;
 	m_midiScaler = 1.0f/127.0f;
 	m_triggerCounter = 1;
 	m_waveSet = new CWaveSet;

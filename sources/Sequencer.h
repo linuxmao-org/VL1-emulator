@@ -115,7 +115,7 @@ public:
 	inline bool IsFull() { return m_song.IsFull(); }
 	inline bool IsEmpty() { return m_song.IsEmpty(); }
 
-	void LoadSong(tSequencerEvent *pSong=NULL);
+	void LoadSong(tSequencerEvent *pSong=nullptr);
 
 	void Play();
 	inline bool IsPlaying() { return m_state.bIsPlaying; }

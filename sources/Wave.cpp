@@ -7,7 +7,7 @@
 
 
 CWave::CWave() :
-	m_pData(NULL),
+	m_pData(nullptr),
 	m_size(0),
 	m_pitchScale(1.0f),
 	m_oversampling(kDefaultOversampling)
@@ -24,7 +24,7 @@ CWave::CWave(int type, int size)
 CWave::~CWave()
 {
 	if (m_pData) delete [] m_pData;
-	m_pData = NULL;
+	m_pData = nullptr;
 }
 
 void CWave::Setup(float sampleRate, int oversampling)
@@ -56,7 +56,7 @@ void CWave::Create(int type, int size, float width)
 	if ((m_pData) && (size!=m_size/m_oversampling))
 	{
 		delete [] m_pData;
-		m_pData = NULL;
+		m_pData = nullptr;
 	}
 
 	if (!m_pData) m_pData = new float[size*(int)m_oversampling];

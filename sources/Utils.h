@@ -25,8 +25,8 @@ typedef CMinMax<float> tMinMaxFloat;
 #define Maxf(a,b) tMinMaxFloat::Max((a),(b))
 #define Clipf(mi,v,ma) tMinMaxFloat::Clip((mi),(v),(ma))
 
-#define SafeDelete(a) if (a) { delete a; a = NULL; }
-#define SafeDeleteArray(a) if (a) { delete [] a; a = NULL; }
+#define SafeDelete(a) if (a) { delete a; a = nullptr; }
+#define SafeDeleteArray(a) if (a) { delete [] a; a = nullptr; }
 
 
 inline int Float2Int(float f)

@@ -131,7 +131,7 @@ int CVL1String::GetDotRev()
 
 bool CVL1String::IsInteger()
 {
-	if (strchr(m_str,'.')==NULL) return true;
+	if (strchr(m_str,'.')==nullptr) return true;
 	for (int i=Length()-1; i>=0; i--)
 	{
 		if ((m_str[i]=='.') || (m_str[i]==' ') || (m_str[i]=='-') || (m_str[i]=='+')) return true;
