@@ -67,8 +67,10 @@ FILES_SHARED = \
 	sources/LFO.cpp \
 	sources/LineInTime.cpp \
 	sources/Noise.cpp \
+	sources/Rhythm.cpp \
 	sources/Utils.cpp \
 	sources/Voice.cpp \
+	sources/VoiceManager.cpp \
 	sources/Wave.cpp \
 	sources/VL1Defs.cpp \
 	sources/VL1String.cpp \
