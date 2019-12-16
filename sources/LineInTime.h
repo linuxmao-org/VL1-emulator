@@ -5,12 +5,15 @@
 #include "Utils.h"
 
 
+class CSharedData;
+
+
 class CLineInTime
 {
 public:
 	CLineInTime();
 
-	void Setup(float sampleRate, int oversampling);
+	void Setup(CSharedData *pShared);
 	void Initialize(float t0/*ms*/, float y0, float t1/*ms*/, float y1, bool bReset);
 	void SetResolution(float tRes/*ms*/, float yRes) { m_tRes = tRes; m_yRes = yRes; }
 	void LoadAccumulator(float acc) { m_y = m_yAcc = acc; }
@@ -40,8 +43,7 @@ private:
 	bool m_bDone;
 	//void CalculateDy() { m_dy = (m_y0-m_y1)/((m_t0-m_t1)*m_sampleRate); }
 
-	float m_sampleRate;
-	int m_oversampling;
+	CSharedData *m_pShared;
 };
 
 

@@ -5,7 +5,7 @@
 #include "VL1Defs.h"
 
 
-class CVoiceManager;
+class CSharedData;
 
 
 typedef struct
@@ -30,7 +30,7 @@ class CRhythm
 public:
 	CRhythm();
 
-	void Setup(CVoiceManager *voices1, float sampleRate, int oversampling);
+	void Setup(CSharedData *pShared);
 
 	void Reset();
 
@@ -59,9 +59,7 @@ private:
 	int m_noiseSize;
 	float *m_pNoise;
 
-	CVoiceManager *m_voices1;
-	float m_sampleRate;
-	int m_oversampling;
+	CSharedData *m_pShared;
 };
 
 

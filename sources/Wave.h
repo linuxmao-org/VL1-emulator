@@ -2,16 +2,17 @@
 #define __WAVE_H__
 
 
+class CSharedData;
+
+
 class CWave
 {
 public:
 	CWave();
-	CWave(int type, int size);
+	CWave(int type, int size, CSharedData *pShared);
 	~CWave();
 
-	void Setup(float sampleRate, int oversampling);
-
-	void Create(int type, int size, float width=0.25f);
+	void Create(int type, int size, CSharedData *pShared, float width=0.25f);
 
 	float *Get() { return m_pData; }
 	long GetSize() { return m_size; }
@@ -24,8 +25,6 @@ private:
 	long m_size;
 	float m_pitchScale;
 	//char *m_pName;
-
-	int m_oversampling;
 
 	void MakeSinc(float width);
 	void MakePulse(float dutyCycle);

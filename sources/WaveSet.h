@@ -1,10 +1,15 @@
 #pragma once
 #include "Wave.h"
 
+
+class CSharedData;
+
+
 struct CWaveSet
 {
-	void Setup(float sampleRate, int oversampling);
+	void Setup(CSharedData *pShared);
 
+	// Waves (samples)
 	CWave wavePiano;
 	CWave waveFantasy;
 	CWave waveViolin;
@@ -13,21 +18,3 @@ struct CWaveSet
 	CWave waveGuitar2;
 	CWave waveEnglishHorn;
 };
-
-inline void CWaveSet::Setup(float sampleRate, int oversampling)
-{
-	CWave *all[] =
-	{
-		&wavePiano,
-		&waveFantasy,
-		&waveViolin,
-		&waveFlute,
-		&waveGuitar1,
-		&waveGuitar2,
-		&waveEnglishHorn,
-	};
-	for (CWave *wave : all)
-	{
-		wave->Setup(sampleRate, oversampling);
-	}
-}

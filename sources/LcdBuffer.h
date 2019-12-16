@@ -3,7 +3,7 @@
 #include "VL1String.h"
 
 
-class CCalculator;
+class CSharedData;
 
 
 enum
@@ -46,13 +46,12 @@ typedef struct
 tLcdState;
 
 
-typedef struct
+struct tLcdScreenData
 {
 	unsigned char dot;
 	char line1[kLcdLine1Size];
 	char line2[kLcdLine2Size];
-}
-tLcdScreenData;
+};
 
 
 class CLcdBuffer
@@ -61,7 +60,7 @@ public:
 	CLcdBuffer();
 	~CLcdBuffer();
 
-	void Setup(CCalculator *calculator, tLcdScreenData *screenData);
+	void Setup(CSharedData *pShared);
 
 	void SetMode(float value);
 	void Input(int key, int pos=8, bool bScroll=true);
@@ -86,7 +85,6 @@ private:
 	void SetOperator(char op);
 
 	tLcdState m_state;
-	tLcdScreenData *m_screenData;
 
-	CCalculator *m_calculator;
+	CSharedData *m_pShared;
 };

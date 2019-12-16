@@ -1,6 +1,7 @@
 #include "LcdBuffer.h"
 #include "Clock.h"
 #include "Calculator.h"
+#include "SharedData.h"
 #include <stdio.h>
 #include <math.h>
 
@@ -12,8 +13,7 @@ const char DigitToChar[10] =
 
 
 CLcdBuffer::CLcdBuffer()
-	: m_screenData(nullptr),
-	  m_calculator(nullptr)
+	: m_pShared(nullptr)
 {
 	m_state.mode = kLcdOffMode;
 	m_state.clock = 0;
@@ -27,10 +27,9 @@ CLcdBuffer::~CLcdBuffer()
 }
 
 
-void CLcdBuffer::Setup(CCalculator *calculator, tLcdScreenData *screenData)
+void CLcdBuffer::Setup(CSharedData *pShared)
 {
-	m_calculator = calculator;
-	m_screenData = screenData;
+	m_pShared = pShared;
 }
 
 
@@ -214,12 +213,12 @@ void CLcdBuffer::SetMode(float value)
 
 	if (m_state.mode==kLcdPlayMode || m_state.mode==kLcdRecMode)
 	{
-		SetTempo(gClock.GetTempo());
+		SetTempo(m_pShared->clock->GetTempo());
 	}
 	else if (m_state.mode==kLcdCalMode)
 	{
 		m_state.bK = false;
-		m_state.bM = m_calculator->GetM();
+		m_state.bM = m_pShared->calculator->GetM();
 		m_state.line1[2] = m_state.bM? 'm' : 0;
 		m_state.line2[8] = '0';
 	}
@@ -339,7 +338,7 @@ void CLcdBuffer::Show(bool bNothing)
 	unsigned char dot = m_state.dot;
 	if (m_state.mode==kLcdCalMode && !dot && !bNothing) dot = 0x01;
 
-	tLcdScreenData *screenData = m_screenData;
+	tLcdScreenData *screenData = m_pShared->screenData;
 	if (screenData)
 	{
 		screenData->dot = dot;

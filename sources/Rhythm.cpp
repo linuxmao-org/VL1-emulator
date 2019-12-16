@@ -1,6 +1,7 @@
 #include "Rhythm.h"
 #include "Noise.h"
 #include "VoiceManager.h"
+#include "SharedData.h"
 
 
 const tRhythmEvent gMarch[2] =
@@ -163,24 +164,20 @@ CRhythm::CRhythm() :
 	m_pBlip(nullptr),
 	m_noiseSize(0),
 	m_pNoise(nullptr),
-	m_voices1(nullptr),
-	m_sampleRate(kDefaultSampleRate),
-	m_oversampling(kDefaultOversampling)
+	m_pShared(nullptr)
 {
 	Reset();
 	MakeBlip(780,30);
-	MakeNoise(50000.0f/m_sampleRate);
+	MakeNoise(50000.0f/kDefaultSampleRate);
 }
 
 
-void CRhythm::Setup(CVoiceManager *voices1, float sampleRate, int oversampling)
+void CRhythm::Setup(CSharedData *pShared)
 {
-	m_voices1 = voices1;
-	m_sampleRate = sampleRate;
-	m_oversampling = oversampling;
+	m_pShared = pShared;
 
 	MakeBlip(780,30);
-	MakeNoise(50000.0f/sampleRate);
+	MakeNoise(50000.0f/pShared->sampleRate);
 }
 
 
@@ -197,12 +194,13 @@ void CRhythm::Reset()
 
 bool CRhythm::MakeBlip(float frequency, int periods)
 {
-	int halfPeriod = ((int)(m_sampleRate/frequency) + 1) >> 1;
+	float sampleRate = m_pShared ? m_pShared->sampleRate : kDefaultSampleRate;
+
+	int halfPeriod = ((int)(sampleRate/frequency) + 1) >> 1;
 
 	m_blipSize = periods*2*halfPeriod;
-	if (m_pBlip) delete [] m_pBlip;
+	SafeDeleteArray(m_pBlip);
 	m_pBlip = new float[m_blipSize];
-	if (!m_pBlip) return false;
 
 	float level = 1.0f;
 	float *pBlip = m_pBlip;
@@ -230,12 +228,14 @@ bool CRhythm::MakeBlip(float frequency, int periods)
 
 bool CRhythm::MakeNoise(float oversampling)
 {
-	if (m_pNoise) delete [] m_pNoise;
+	SafeDeleteArray(m_pNoise);
+
+	float sampleRate = m_pShared ? m_pShared->sampleRate : kDefaultSampleRate;
 
 	float l1 = 8*0.005f; // 8 levels of 5 ms.
 	float l2 = 6*0.02f; // 6 levels of 20 ms.
-	int s1 = (int)(m_sampleRate*oversampling*l1);
-	int s2 = (int)(m_sampleRate*oversampling*l2);
+	int s1 = (int)(sampleRate*oversampling*l1);
+	int s2 = (int)(sampleRate*oversampling*l2);
 	m_noiseSize = s1+s2+1;
 	m_pNoise = new float[m_noiseSize];
 	if (!m_pNoise) return false;
@@ -249,7 +249,7 @@ bool CRhythm::MakeNoise(float oversampling)
 	CNoise noise;
 	float *pNoise = m_pNoise;
 
-	int len = (int)(m_sampleRate*(float)oversampling*0.005f + 0.5f);
+	int len = (int)(sampleRate*(float)oversampling*0.005f + 0.5f);
 	int p = 8;
 
 	for (int i=0; i<p; i++)
@@ -261,7 +261,7 @@ bool CRhythm::MakeNoise(float oversampling)
 		level -= 1.0f/15.0f;
 	}
 
-	len = (int)(m_sampleRate*(float)oversampling*0.020f + 0.5f);
+	len = (int)(sampleRate*(float)oversampling*0.020f + 0.5f);
 	p = 6;
 
 	for (int i=0; i<p; i++)
@@ -285,9 +285,11 @@ void CRhythm::SetBeat(int beat)
 
 void CRhythm::Play(int startAtBeat)
 {
+	CVoiceManager *pVoices1 = m_pShared->pVoices1;
+
 	SetBeat(startAtBeat);
 	//m_triggerCounter = 1;
-	m_triggerCounter = m_voices1? m_voices1->GetTrigger() : 1;
+	m_triggerCounter = pVoices1? pVoices1->GetTrigger() : 1;
 	m_bScheduleStop = false;
 	m_bIsPlaying = true;
 }

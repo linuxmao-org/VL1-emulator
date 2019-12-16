@@ -7,7 +7,7 @@
 #include "Clock.h"
 
 
-extern float gSampleRate;
+class CSharedData;
 
 
 // Sequencer constants
@@ -92,7 +92,7 @@ public:
 	CSequencer();
 	~CSequencer();
 
-	void Setup(CEventManager* pEventManager);
+	void Setup(CSharedData *pShared);
 
 	void Reset();
 	inline void Clear()
@@ -145,20 +145,11 @@ private:
 	bool m_bDirty;
 	bool m_bRecording;
 
-	inline int ScaleTime(float time, bool bInMs)
-	{
-		if (bInMs) return (int)(0.001f*time*gSampleRate); // to samples
-		else return (int)(time*(float)gClock.GetTempoPeriod());
-	}
+	int ScaleTime(float time, bool bInMs);
 
-	//inline void ResetRecTime() { m_state.startTime = gClock.GetTickCount(); }
-	inline void ResetRecTime() { m_startTime = gClock.GetMsCount(); }
+	void ResetRecTime();
 
-	inline float GetRecTime() // In ms.
-	{
-		//return 1000.0f*(gClock.GetTickCount()-m_state.startTime)/gSampleRate;
-		return (gClock.GetMsCount()-m_startTime);
-	}
+	float GetRecTime(); // In ms.
 
 	inline void IncSongPointer()
 		{ SetSongPointer(m_state.songPointer+1); }
@@ -178,7 +169,7 @@ private:
 	tSequencerEvent *m_pSong;
 	tEvent m_event;
 
-	CEventManager* m_pEventManager;
+	CSharedData* m_pShared;
 };
 
 

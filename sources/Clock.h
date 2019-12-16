@@ -1,29 +1,66 @@
-#pragma once
+#ifndef __CLOCK_H__
+#define __CLOCK_H__
 
-#pragma message("TODO fake Clock object, implement it later")
 
-#define gClock (CClock::Instance())
+#include "VL1Defs.h"
+
+
+class CSharedData;
+
 
 enum
 {
 	kClockSequencer = 1,
 };
 
+
+typedef struct
+{
+	bool bClockSequencer;
+	bool bShowTempo;
+}
+tClockState;
+
+
 class CClock
 {
 public:
-	static CClock &Instance()
-	{
-		static CClock clock;
-		return clock;
-	}
+	CClock();
 
-	long GetTickCount() { return 0; }
-	long GetMsCount() { return 0; }
+	void Setup(CSharedData *pShared);
 
-	float GetTempo() const { return 0; }
-	int GetTempoPeriod() { return 0; }
+	void Reset();
 
-	void EnableClock(int, bool) {}
-	void DisableAllClocks() {}
+	inline long GetTickCount() { return m_tickCounter; }
+	inline long GetMsCount() { return m_msCounter; }
+
+	float SetTempo(float tempo);
+	inline float GetTempo() { return m_tempo; }
+	inline int GetTempoPeriod() { return m_tempoPeriod; }
+
+	long Tick();
+
+	void EnableClock(int function, bool bEnable);
+	void DisableAllClocks();
+
+	void GetState(tClockState& state) { state = m_state; }
+	void SetState(tClockState& state) { m_state = state; }
+
+private:
+	long m_msCounter;
+	long m_tickCounter;
+	//long m_lastTickCounter;
+	//long m_tempoTimer;
+	float m_tempo;
+	int m_tempoPeriod;
+	float m_tickAccu;
+	float m_tickPeriod;
+	float m_tickStep;
+
+	tClockState m_state;
+
+	CSharedData *m_pShared;
 };
+
+
+#endif // __CLOCK_H__

@@ -3,8 +3,8 @@
 
 #include "DistrhoPlugin.hpp"
 #include "SharedVL1.h"
-#include "Calculator.h"
-#include "LcdBuffer.h"
+#include "SharedData.h"
+#include <memory>
 
 // -----------------------------------------------------------------------
 
@@ -12,6 +12,7 @@ class PluginVL1 : public Plugin
 {
 public:
 	PluginVL1();
+	~PluginVL1();
 
 protected:
 	// -------------------------------------------------------------------
@@ -55,12 +56,20 @@ protected:
 	// -------------------------------------------------------------------
 
 public:
-	const tLcdScreenData &GetLcdScreenData() const { return m_lcdScreenData; }
+	const tLcdScreenData &GetLcdScreenData() const { return *m_lcdScreenData; }
 
 private:
-	CCalculator m_calculator;
-	CLcdBuffer m_lcdBuffer;
-	tLcdScreenData m_lcdScreenData;
+	CSharedData m_sharedData;
+
+	std::unique_ptr<CCalculator> m_calculator;
+	std::unique_ptr<CLcdBuffer> m_lcdBuffer;
+	std::unique_ptr<tLcdScreenData> m_lcdScreenData;
+	std::unique_ptr<CWaveSet> m_waves;
+	std::unique_ptr<CSequencer> m_sequencer;
+	std::unique_ptr<CRhythm> m_rhythm;
+	std::unique_ptr<CEventManager> m_eventManager;
+	std::unique_ptr<CVoiceManager> m_voiceManager;
+	std::unique_ptr<CClock> m_clock;
 
 	DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluginVL1)
 };

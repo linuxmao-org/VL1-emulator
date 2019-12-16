@@ -5,23 +5,19 @@
 #include "VL1Defs.h"
 #include "Voice.h"
 #include "EventManager.h"
-#include "WaveSet.h"
 
 
-class CLcdBuffer;
-class CRhythm;
+class CSharedData;
 
 
 class CVoiceManager : public CEventInput
 {
 public:
 	CVoiceManager();
-	CVoiceManager(int numVoices, float sampleRate, int oversampling);
+	CVoiceManager(int numVoices, CSharedData *pShared);
 	~CVoiceManager();
 
-	void Setup(CLcdBuffer *lcd, CRhythm *rhythm);
-
-	bool Create(int numVoices, long int adsr, float sampleRate, int oversampling);
+	bool Create(int numVoices, long int adsr, CSharedData *pShared);
 	void Destroy();
 	void SetParameter(int param, float value);
 	void Reset();
@@ -43,9 +39,7 @@ private:
 	float *m_pNote;
 	float m_midiScaler;
 	int m_triggerCounter;
-	CWaveSet *m_waveSet;
-	CLcdBuffer *m_LCD;
-	CRhythm *m_rhythm;
+	CSharedData *m_pShared;
 
 	bool NoteOn(char note, char velocity);
 	bool NoteOff(char note, char velocity);

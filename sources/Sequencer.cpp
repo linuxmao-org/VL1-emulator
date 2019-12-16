@@ -1,4 +1,5 @@
 #include "Sequencer.h"
+#include "SharedData.h"
 #include "MidiDefs.h"
 #include <string.h>
 
@@ -120,7 +121,7 @@ void CSequencerEventArray::TraceEvents(int start)
 
 CSequencer::CSequencer() :
 	m_bDirty(false),
-	m_pEventManager(nullptr)
+	m_pShared(nullptr)
 {
 	Clear();
 	Reset();
@@ -132,9 +133,9 @@ CSequencer::~CSequencer()
 }
 
 
-void CSequencer::Setup(CEventManager* pEventManager)
+void CSequencer::Setup(CSharedData *pShared)
 {
-	m_pEventManager = pEventManager;
+	m_pShared = pShared;
 }
 
 
@@ -203,7 +204,7 @@ void CSequencer::Play()
 	if (m_pSong)
 	{
 		m_state.bIsPlaying = true;
-		gClock.EnableClock(kClockSequencer,true);
+		m_pShared->clock->EnableClock(kClockSequencer,true);
 	}
 }
 
@@ -223,7 +224,7 @@ void CSequencer::Stop()
 {
 	TRACE("CSequencer::Stop\n");
 	Pause(true);
-	gClock.EnableClock(kClockSequencer,false);
+	m_pShared->clock->EnableClock(kClockSequencer,false);
 	Rewind();
 }
 
@@ -242,7 +243,7 @@ void CSequencer::DoEvent(const tSequencerEvent& event)
 {
 	TRACE("CSequencer::DoEvent\n");
 	memcpy(m_event.midiEvent.midiData,event.midi,4*sizeof(char));
-	m_pEventManager->AddEvent(m_event);
+	m_pShared->eventManager->AddEvent(m_event);
 }
 
 
@@ -323,4 +324,22 @@ void CSequencer::SetState(tSequencerState& state)
 	{
 		Clear();
 	}
+}
+
+int CSequencer::ScaleTime(float time, bool bInMs)
+{
+	if (bInMs) return (int)(0.001f*time*m_pShared->sampleRate); // to samples
+	else return (int)(time*(float)m_pShared->clock->GetTempoPeriod());
+}
+
+void CSequencer::ResetRecTime()
+{
+	//m_state.startTime = m_pShared->clock->GetTickCount();
+	m_startTime = m_pShared->clock->GetMsCount();
+}
+
+float CSequencer::GetRecTime()
+{
+	//return 1000.0f*(m_pShared->clock->GetTickCount()-m_state.startTime)/gSampleRate;
+	return (m_pShared->clock->GetMsCount()-m_startTime);
 }

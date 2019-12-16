@@ -1,4 +1,5 @@
 #include "Wave.h"
+#include "SharedData.h"
 #include "VL1Defs.h"
 #include "Utils.h"
 #include <stdio.h>
@@ -9,15 +10,14 @@
 CWave::CWave() :
 	m_pData(nullptr),
 	m_size(0),
-	m_pitchScale(1.0f),
-	m_oversampling(kDefaultOversampling)
+	m_pitchScale(1.0f)
 {
 }
 
 
-CWave::CWave(int type, int size)
+CWave::CWave(int type, int size, CSharedData *pShared)
 {
-	Create(type,size);
+	Create(type,size,pShared);
 }
 
 
@@ -25,12 +25,6 @@ CWave::~CWave()
 {
 	if (m_pData) delete [] m_pData;
 	m_pData = nullptr;
-}
-
-void CWave::Setup(float sampleRate, int oversampling)
-{
-	(void)sampleRate;
-	m_oversampling = oversampling;
 }
 
 void CWave::DumpToFile(const char *pFilePath)
@@ -48,22 +42,24 @@ void CWave::DumpToFile(const char *pFilePath)
 }
 
 
-void CWave::Create(int type, int size, float width)
+void CWave::Create(int type, int size, CSharedData *pShared, float width)
 {
 	//bool bWriteFile = true;
 	bool bWriteFile = false;
 
-	if ((m_pData) && (size!=m_size/m_oversampling))
+	int oversampling = pShared->oversampling;
+
+	if ((m_pData) && (size!=m_size/oversampling))
 	{
 		delete [] m_pData;
 		m_pData = nullptr;
 	}
 
-	if (!m_pData) m_pData = new float[size*(int)m_oversampling];
+	if (!m_pData) m_pData = new float[size*oversampling];
 
 	if (m_pData)
 	{
-		m_size = size*(int)m_oversampling;
+		m_size = size*oversampling;
 		memset(m_pData,0,m_size*sizeof(float));
 
 		switch (type)

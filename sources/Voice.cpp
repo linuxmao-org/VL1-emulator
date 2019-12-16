@@ -1,4 +1,5 @@
 #include "Voice.h"
+#include "SharedData.h"
 #include <math.h>
 
 
@@ -53,26 +54,23 @@ CVoice::CVoice() :
 	m_velocity(0.0f),
 	m_lastSample(0.0f),
 	m_vibratoScale(0.0002f),
-	m_pWaveSet(nullptr),
 	m_pWave(nullptr),
-	m_sampleRate(kDefaultSampleRate),
-	m_oversampling(kDefaultOversampling)
+	m_pShared(nullptr)
 {
 	m_lfoTremolo.SetDcLevel(1.0f);
 }
 
 
-void CVoice::Setup(CWaveSet *waveSet, float sampleRate, int oversampling)
+void CVoice::Setup(CSharedData *pShared)
 {
-	m_sampleRate = sampleRate;
-	m_oversampling = oversampling;
-	m_pWaveSet = waveSet;
-	m_pWave = &waveSet->wavePiano;
+	m_pShared = pShared;
 
-	m_vca.Setup(sampleRate, oversampling);
-	m_lfoVibrato.Setup(sampleRate, oversampling);
-	m_lfoTremolo.Setup(sampleRate, oversampling);
-	m_envelopeShaper.Setup(sampleRate, oversampling);
+	m_pWave = &pShared->waves->wavePiano;
+
+	m_vca.Setup(pShared);
+	m_lfoVibrato.Setup(pShared);
+	m_lfoTremolo.Setup(pShared);
+	m_envelopeShaper.Setup(pShared);
 }
 
 
@@ -87,12 +85,15 @@ void CVoice::Setup(CWaveSet *waveSet, float sampleRate, int oversampling)
 
 void CVoice::Reset()
 {
+	float sampleRate = m_pShared->sampleRate;
+	int oversampling = m_pShared->oversampling;
+
 	m_vca.Reset();
 	m_lfoVibrato.Reset();
 	m_lfoTremolo.Reset();
-	m_lpf.SetCutoff(0.95f*m_sampleRate/m_oversampling,m_sampleRate);
+	m_lpf.SetCutoff(0.95f*sampleRate/oversampling,sampleRate);
 	m_lpf.SetQ(4.0f);
-	m_lpf2.SetCutoff(0.45f*m_sampleRate,m_sampleRate);
+	m_lpf2.SetCutoff(0.45f*sampleRate,sampleRate);
 	m_lpf2.SetQ(2.0f);
 	//m_lpf.SetChebychef1();
 	//m_lpf2.SetChebychef2();
@@ -105,19 +106,21 @@ void CVoice::SetParameter(int param, float value)
 {
 	value = Clipf(0.0f,value,1.0f);
 
+	CWaveSet *waves = m_pShared->waves;
+
 	switch (param)
 	{
 		case kSound:
-			if (value<0.1f) m_pWave = &m_pWaveSet->wavePiano; // 0
-			else if (value<0.2f) m_pWave = &m_pWaveSet->waveFantasy; // 1
-			else if (value<0.3f) m_pWave = &m_pWaveSet->waveViolin; // 2
-			else if (value<0.4f) m_pWave = &m_pWaveSet->waveFlute; // 3
-			else if (value<0.5f) m_pWave = &m_pWaveSet->waveGuitar1; // 4
-			else if (value<0.6f) m_pWave = &m_pWaveSet->waveGuitar2; // 5
-			else if (value<0.7f) m_pWave = &m_pWaveSet->waveEnglishHorn; // 6
-			else if (value<0.8f) m_pWave = &m_pWaveSet->wavePiano; // 7, with modulation = electro 1
-			else if (value<0.9f) m_pWave = &m_pWaveSet->waveFantasy; // 8, with modulation = electro 2
-			else m_pWave = &m_pWaveSet->waveViolin; // 9, with modulation = electro 3
+			if (value<0.1f) m_pWave = &waves->wavePiano; // 0
+			else if (value<0.2f) m_pWave = &waves->waveFantasy; // 1
+			else if (value<0.3f) m_pWave = &waves->waveViolin; // 2
+			else if (value<0.4f) m_pWave = &waves->waveFlute; // 3
+			else if (value<0.5f) m_pWave = &waves->waveGuitar1; // 4
+			else if (value<0.6f) m_pWave = &waves->waveGuitar2; // 5
+			else if (value<0.7f) m_pWave = &waves->waveEnglishHorn; // 6
+			else if (value<0.8f) m_pWave = &waves->wavePiano; // 7, with modulation = electro 1
+			else if (value<0.9f) m_pWave = &waves->waveFantasy; // 8, with modulation = electro 2
+			else m_pWave = &waves->waveViolin; // 9, with modulation = electro 3
 
 			m_bModulate = value>0.7f? true : false;
 			m_modulation = 1.0f;
@@ -173,10 +176,13 @@ void CVoice::SetParameter(int param, float value)
 
 void CVoice::NoteOn(float frequency, float velocity)
 {
+	float sampleRate = m_pShared->sampleRate;
+	int oversampling = m_pShared->oversampling;
+
 	int oct = floorf(2.0f*m_octave);
 	//float octave = oct==0? 0.5f : oct==1? 1.0f : 2.0f;
 	float octave = oct==0? 1.0f : oct==1? 2.0f : 4.0f;
-	m_phaseInc = m_pWave->GetPitchScale()*m_tune*octave*frequency*((float)m_pWave->GetSize()/(m_sampleRate*m_oversampling));
+	m_phaseInc = m_pWave->GetPitchScale()*m_tune*octave*frequency*((float)m_pWave->GetSize()/(sampleRate*oversampling));
 	m_phase = 0.0f;
 	m_velocity = velocity;
 	m_vca.Gate(true);
@@ -254,7 +260,9 @@ float CVoice::Clock()
 	//float ph2[8];
 	//float ph3[8];
 
-	for (int i=0; i<m_oversampling; i++)
+	int oversampling = m_pShared->oversampling;
+
+	for (int i=0; i<oversampling; i++)
 	{
 		//ph1[i] = m_phase;
 		//ph3[i] = m_phaseInc;
@@ -288,7 +296,7 @@ float CVoice::Clock()
 		}
 	}
 
-	sample *= m_velocity/m_oversampling;
+	sample *= m_velocity/oversampling;
 	//sample *= m_velocity;
 	//sample = m_lpf2.Clock(sample);
 

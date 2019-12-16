@@ -1,4 +1,5 @@
 #include "LFO.h"
+#include "SharedData.h"
 #include "VL1Defs.h"
 #include <math.h>
 
@@ -6,8 +7,7 @@
 CLfo::CLfo() :
 	m_dc(0.0f),
 	m_bEnable(false),
-	m_sampleRate(kDefaultSampleRate),
-	m_oversampling(kDefaultOversampling)
+	m_pShared(nullptr)
 {
 	SetFrequency(kLfoBaseFreq);
 }
@@ -18,10 +18,11 @@ CLfo::~CLfo()
 }
 
 
-void CLfo::Setup(float sampleRate, int oversampling)
+void CLfo::Setup(CSharedData *pShared)
 {
-	m_sampleRate = sampleRate;
-	m_oversampling = oversampling;
+	m_pShared = pShared;
+
+	ResetSine();
 }
 
 
@@ -40,8 +41,11 @@ void CLfo::Reset()
 
 void CLfo::ResetSine()
 {
+	float sampleRate = m_pShared ? m_pShared->sampleRate : kDefaultSampleRate;
+	int oversampling = m_pShared ? m_pShared->oversampling : kDefaultOversampling;
+
 	float kPi = M_PI;
-	m_a = 2.0f*sinf(kPi*m_frequency/(m_sampleRate*m_oversampling));
+	m_a = 2.0f*sinf(kPi*m_frequency/(sampleRate*oversampling));
 	m_sin = 1.0f;
 	m_cos = 0.0f;
 }

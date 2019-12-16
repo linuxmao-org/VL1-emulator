@@ -1,6 +1,7 @@
 #include "VoiceManager.h"
 #include "LcdBuffer.h"
 #include "Rhythm.h"
+#include "SharedData.h"
 #include "MidiDefs.h"
 #include "Utils.h"
 #include <math.h>
@@ -15,23 +16,16 @@ CVoiceManager::CVoiceManager()
 }
 
 
-CVoiceManager::CVoiceManager(int numVoices, float sampleRate, int oversampling)
+CVoiceManager::CVoiceManager(int numVoices, CSharedData *pShared)
 {
 	Initialize();
-	Create(numVoices, 0, sampleRate, oversampling);
+	Create(numVoices, 0, pShared);
 }
 
 
 CVoiceManager::~CVoiceManager()
 {
 	Destroy();
-}
-
-
-void CVoiceManager::Setup(CLcdBuffer *lcd, CRhythm *rhythm)
-{
-	m_LCD = lcd;
-	m_rhythm = rhythm;
 }
 
 
@@ -43,15 +37,15 @@ void CVoiceManager::Initialize()
 	m_pNote = nullptr;
 	m_midiScaler = 1.0f/127.0f;
 	m_triggerCounter = 1;
-	m_waveSet = new CWaveSet;
-	m_LCD = nullptr;
-	m_rhythm = nullptr;
+	m_pShared = nullptr;
 }
 
 
-bool CVoiceManager::Create(int numVoices, long int adsr, float sampleRate, int oversampling)
+bool CVoiceManager::Create(int numVoices, long int adsr, CSharedData *pShared)
 {
 	Destroy();
+
+	m_pShared = pShared;
 
 	m_pNote = new float[m_maxNote];
 
@@ -73,12 +67,9 @@ bool CVoiceManager::Create(int numVoices, long int adsr, float sampleRate, int o
 	m_pVoice = pVoice;
 	m_maxVoice = numVoices;
 
-	CWaveSet *waveSet = m_waveSet;
-	waveSet->Setup(sampleRate, oversampling);
-
 	for (int i=0; i<numVoices; ++i)
 	{
-		pVoice[i].Setup(waveSet, sampleRate, oversampling);
+		pVoice[i].Setup(m_pShared);
 	}
 
 	return true;
@@ -91,7 +82,6 @@ void CVoiceManager::Destroy()
 	m_maxVoice = 0;
 	SafeDeleteArray(m_pVoice);
 	SafeDeleteArray(m_pNote);
-	SafeDelete(m_waveSet);
 }
 
 
@@ -148,7 +138,7 @@ bool CVoiceManager::NoteOn(char note, char velocity)
 	if (velocity>0)
 	{
 		m_pVoice[i].NoteOn(m_pNote[(unsigned char)note],(float)velocity*m_midiScaler);
-		m_LCD->ShowNote(note);
+		m_pShared->LCD->ShowNote(note);
 	}
 	else
 	{
@@ -236,19 +226,19 @@ bool CVoiceManager::ProcessEvent(tEvent& event)
 
 				case kRhythm:
 				{
-					m_rhythm->SelectRhythm(value2);
+					m_pShared->rhythm->SelectRhythm(value2);
 				}
 				break;
 
 				case kRhythmOn:
 				{
-					m_rhythm->Play(value2);
+					m_pShared->rhythm->Play(value2);
 				}
 				break;
 
 				case kRhythmOff:
 				{
-					m_rhythm->Stop();
+					m_pShared->rhythm->Stop();
 				}
 				break;
 

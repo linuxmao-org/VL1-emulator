@@ -1,4 +1,5 @@
 #include "EnvelopeShaper.h"
+#include "SharedData.h"
 #include "VL1Defs.h"
 
 
@@ -7,8 +8,7 @@ CEnvelopeShaper::CEnvelopeShaper() :
 	m_vCap(0.0f),
 	m_rCharge(1.0f/600.0f), // 1/R to prevent divides.
 	m_rDischarge(1.0f/33000.0f), // 1/R to prevent divides.
-	m_sampleRate(kDefaultSampleRate),
-	m_oversampling(kDefaultOversampling)
+	m_pShared(nullptr)
 {
 }
 
@@ -20,15 +20,17 @@ const float b = 0.246632173f;
 const float c = -0.219399434f;
 
 
-void CEnvelopeShaper::Setup(float sampleRate, int oversampling)
+void CEnvelopeShaper::Setup(CSharedData *pShared)
 {
-	m_sampleRate = sampleRate;
-	m_oversampling = oversampling;
+	m_pShared = pShared;
 }
 
 
 float CEnvelopeShaper::Clock(float in)
 {
+	float sampleRate = m_pShared->sampleRate;
+	int oversampling = m_pShared->oversampling;
+
 	float iCharge;
 	float vIn = in*5.0f - 0.6f;
 	if (vIn>m_vCap)
@@ -48,7 +50,7 @@ float CEnvelopeShaper::Clock(float in)
 	}*/
 
 	// i = C*(dV/dt) -> V = (1/C)INTEGRALE(i*dt)
-	m_vCap += iCharge/(m_sampleRate*m_oversampling*m_cap);
+	m_vCap += iCharge/(sampleRate*oversampling*m_cap);
 
 	//float vOut = m_vCap;
 	float vOut = a*m_vCap*m_vCap + b*m_vCap + c;

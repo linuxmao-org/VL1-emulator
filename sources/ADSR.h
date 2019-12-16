@@ -8,6 +8,9 @@
 #include "VL1Defs.h"
 
 
+class CSharedData;
+
+
 enum
 {
 	kAdsrIdle = 0,
@@ -23,7 +26,7 @@ class CAdsr
 public:
 	CAdsr();
 
-	void Setup(float sampleRate, int oversampling);
+	void Setup(CSharedData *pShared);
 
 	void Reset();
 

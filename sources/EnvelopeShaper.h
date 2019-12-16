@@ -2,12 +2,15 @@
 #define __ENVELOPE_SHAPER_H__
 
 
+class CSharedData;
+
+
 class CEnvelopeShaper
 {
 public:
 	CEnvelopeShaper();
 
-	void Setup(float sampleRate, int oversampling);
+	void Setup(CSharedData *pShared);
 	float Clock(float in);
 
 private:
@@ -16,8 +19,7 @@ private:
 	float m_rCharge;
 	float m_rDischarge;
 
-	float m_sampleRate;
-	int m_oversampling;
+	CSharedData *m_pShared;
 };
 
 

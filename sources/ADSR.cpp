@@ -20,9 +20,9 @@ CAdsr::CAdsr() :
 }
 
 
-void CAdsr::Setup(float sampleRate, int oversampling)
+void CAdsr::Setup(CSharedData *pShared)
 {
-	m_envelope.Setup(sampleRate, oversampling);
+	m_envelope.Setup(pShared);
 }
 
 

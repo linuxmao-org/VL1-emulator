@@ -4,11 +4,13 @@
 
 #include "Utils.h"
 #include "Wave.h"
-#include "WaveSet.h"
 #include "ADSR.h"
 #include "LFO.h"
 #include "Filters.h"
 #include "EnvelopeShaper.h"
+
+
+class CSharedData;
 
 
 class CVoice
@@ -16,7 +18,7 @@ class CVoice
 public:
 	CVoice();
 
-	void Setup(CWaveSet *waveSet, float sampleRate, int oversampling);
+	void Setup(CSharedData *pShared);
 
 	void Reset();
 	void SetParameter(int param, float value);
@@ -43,7 +45,6 @@ private:
 	float m_lastSample;
 	float m_vibratoScale;
 
-	CWaveSet *m_pWaveSet;
 	CWave *m_pWave;
 	CAdsr m_vca;
 	CLfo m_lfoVibrato;
@@ -54,8 +55,7 @@ private:
 	CBiquadLpf m_lpf2;
 	//CIIR1 m_antialias;
 
-	float m_sampleRate;
-	int m_oversampling;
+	CSharedData *m_pShared;
 };
 
 

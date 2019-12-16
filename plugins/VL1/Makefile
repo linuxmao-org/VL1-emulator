@@ -60,6 +60,7 @@ BUILD_LADSPA ?= false
 FILES_SHARED = \
 	sources/ADSR.cpp \
 	sources/Calculator.cpp \
+	sources/Clock.cpp \
 	sources/EnvelopeShaper.cpp \
 	sources/EventManager.cpp \
 	sources/Filters.cpp \
@@ -73,6 +74,7 @@ FILES_SHARED = \
 	sources/Voice.cpp \
 	sources/VoiceManager.cpp \
 	sources/Wave.cpp \
+	sources/WaveSet.cpp \
 	sources/VL1Defs.cpp \
 	sources/VL1String.cpp \
 	sources/plugin/SharedVL1.cpp

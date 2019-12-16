@@ -5,6 +5,9 @@
 #include "Utils.h"
 
 
+class CSharedData;
+
+
 #define kLfoBaseFreq  35.0f
 
 
@@ -14,7 +17,7 @@ public:
 	CLfo();
 	~CLfo();
 
-	void Setup(float sampleRate, int oversampling);
+	void Setup(CSharedData *pShared);
 
 	void SetFrequency(float freq);
 	void SetDcLevel(float dc) { m_dc = dc; }
@@ -34,8 +37,7 @@ private:
 	float m_dc;
 	bool m_bEnable;
 
-	float m_sampleRate;
-	int m_oversampling;
+	CSharedData *m_pShared;
 
 	void ResetSine();
 	float ClockSine();
