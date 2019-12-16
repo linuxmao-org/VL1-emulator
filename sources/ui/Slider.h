@@ -2,7 +2,7 @@
 #include "Control.h"
 #include "utility/CairoExtra.h"
 
-class Slider : public CControl
+class Slider final : public CControl
 {
 public:
 	Slider(cairo_surface_t *imgBody, cairo_surface_t *imgHandle, Widget *group);
@@ -13,8 +13,7 @@ public:
 		Vertical,
 	};
 
-	double value() const noexcept { return fValue; }
-	void setValue(double value);
+	void setValue(double value) override;
 
 	void setValueBounds(double v1, double v2);
 	void setNumSteps(unsigned numSteps);
@@ -29,7 +28,6 @@ private:
 	double clampToBounds(double value);
 
 private:
-	double fValue = 0;
 	double fValueBound1 = 0, fValueBound2 = 1;
 	unsigned fNumSteps = 100;
 	Orientation fOrientation = Horizontal;

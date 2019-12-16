@@ -29,18 +29,14 @@ bool KickButton::onMouse(const MouseEvent &event)
 	if (event.press && event.button == 1 && inside)
 	{
 		fIsPressed = true;
-		repaint();
+		setValue(1);
 		return true;
 	}
-	else if (!event.press && event.button == 1)
+	else if (!event.press && event.button == 1 && fIsPressed)
 	{
-		if (fIsPressed)
-		{
-			fIsPressed = false;
-			if (inside)
-				reportTriggered();
-			repaint();
-		}
+		fIsPressed = false;
+		setValue(0);
+		return true;
 	}
 
 	return false;

@@ -14,14 +14,14 @@ public:
 	intptr_t getTag() const noexcept { return fTag; }
 	void setTag(intptr_t tag) noexcept { fTag = tag; }
 
+	double getValue() { return fValue; }
+	virtual void setValue(double value);
+
 	void addListener(CControlListener *cl);
 	void removeListener(CControlListener *cl);
 
-protected:
-	void reportValueChanged(double value);
-	void reportTriggered();
-
 private:
+	double fValue = 0;
 	intptr_t fTag = 0;
 	std::vector<CControlListener *> fListeners;
 };
@@ -31,6 +31,5 @@ class CControlListener
 public:
 	virtual ~CControlListener() {}
 
-	virtual void controlValueChanged(CControl &, double /*value*/) {};
-	virtual void controlTriggered(CControl &) {};
+	virtual void controlValueChanged(CControl &) {};
 };

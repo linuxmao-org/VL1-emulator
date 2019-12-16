@@ -13,21 +13,14 @@ Slider::Slider(cairo_surface_t *imgBody, cairo_surface_t *imgHandle, Widget *gro
 
 void Slider::setValue(double value)
 {
-	value = clampToBounds(value);
-
-	if (fValue == value)
-		return;
-
-	fValue = value;
-	reportValueChanged(value);
-	repaint();
+	CControl::setValue(clampToBounds(value));
 }
 
 void Slider::setValueBounds(double v1, double v2)
 {
 	fValueBound1 = v1;
 	fValueBound2 = v2;
-	setValue(fValue);
+	setValue(getValue());
 }
 
 void Slider::setNumSteps(unsigned numSteps)
@@ -118,7 +111,7 @@ bool Slider::onScroll(const ScrollEvent &event)
 		double amount = event.delta.getX() - event.delta.getY();
 		if (fOrientation == Vertical)
 			amount = -amount;
-		setValue(fValue + amount * (fValueBound2 - fValueBound1) / fNumSteps);
+		setValue(getValue() + amount * (fValueBound2 - fValueBound1) / fNumSteps);
 		return true;
 	}
 
@@ -142,10 +135,9 @@ void Slider::onDisplay()
 	double v2 = fValueBound2;
 
 	//
-	double value = fValue;
 	double fill = 0;
 	if (v1 != v2)
-		fill = (value - v1) / (v2 - v1);
+		fill = (getValue() - v1) / (v2 - v1);
 
 	//
 	cairo_rectangle(cr, 0, 0, wBody, hBody);

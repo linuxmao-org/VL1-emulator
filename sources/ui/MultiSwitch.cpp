@@ -18,29 +18,20 @@ void MultiSwitch::setValue(double value)
 	double v2 = fValueBound2;
 	unsigned n = fNumSteps;
 
-	//
 	if (v1 != v2 && n > 0)
 	{
 		double fill = (value - v1) / (v2 - v1);
 		value = std::round(fill * (n - 1)) / (n - 1) * (v2 - v1) + v1;
 	}
 
-	//
-	value = clampToBounds(value);
-
-	if (fValue == value)
-		return;
-
-	fValue = value;
-	reportValueChanged(value);
-	repaint();
+	CControl::setValue(clampToBounds(value));
 }
 
 void MultiSwitch::setValueBounds(double v1, double v2)
 {
 	fValueBound1 = v1;
 	fValueBound2 = v2;
-	setValue(fValue);
+	setValue(getValue());
 }
 
 void MultiSwitch::setNumSteps(unsigned numSteps)
@@ -131,7 +122,7 @@ bool MultiSwitch::onScroll(const ScrollEvent &event)
 		double amount = event.delta.getX() - event.delta.getY();
 		if (fOrientation == Vertical)
 			amount = -amount;
-		setValue(fValue + amount * (fValueBound2 - fValueBound1) / fNumSteps);
+		setValue(getValue() + amount * (fValueBound2 - fValueBound1) / fNumSteps);
 		return true;
 	}
 
@@ -151,10 +142,9 @@ void MultiSwitch::onDisplay()
 	double v2 = fValueBound2;
 
 	//
-	double value = fValue;
 	double fill = 0;
 	if (v1 != v2)
-		fill = (value - v1) / (v2 - v1);
+		fill = (getValue() - v1) / (v2 - v1);
 
 	//
 	cairo_surface_t *image = skin.getImageForRatio(fill);

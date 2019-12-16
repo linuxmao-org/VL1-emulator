@@ -218,23 +218,14 @@ bool UIVL1::onScroll(const ScrollEvent &ev)
 
 // -----------------------------------------------------------------------
 
-void UIVL1::controlValueChanged(CControl &control, double value)
+void UIVL1::controlValueChanged(CControl &control)
 {
 	long tag = control.getTag();
+	double value = control.getValue();
 
 	switch (tag)
 	{
 		// TODO sliders and multi-switches
-	}
-}
-
-void UIVL1::controlTriggered(CControl &control)
-{
-	long tag = control.getTag();
-
-	switch (tag)
-	{
-		// TODO buttons
 	}
 }
 

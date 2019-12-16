@@ -35,8 +35,7 @@ protected:
 	bool onScroll(const ScrollEvent &ev) override;
 
 protected:
-	void controlValueChanged(CControl &control, double value) override;
-	void controlTriggered(CControl &control) override;
+	void controlValueChanged(CControl &control) override;
 
 private:
 	static Size<uint> getBackgroundSize();

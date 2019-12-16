@@ -2,7 +2,7 @@
 #include "Control.h"
 #include "ImageSkin.h"
 
-class KickButton : public CControl
+class KickButton final : public CControl
 {
 public:
 	KickButton(ImageSkin skin, Widget *group);

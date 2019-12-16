@@ -1,15 +1,16 @@
 #include "Control.h"
 
-void CControl::reportValueChanged(double value)
+void CControl::setValue(double value)
 {
-	for (CControlListener *cl : fListeners)
-		cl->controlValueChanged(*this, value);
-}
+	if (fValue == value)
+		return;
 
-void CControl::reportTriggered()
-{
+	fValue = value;
+
 	for (CControlListener *cl : fListeners)
-		cl->controlTriggered(*this);
+		cl->controlValueChanged(*this);
+
+	repaint();
 }
 
 void CControl::addListener(CControlListener *cl)
