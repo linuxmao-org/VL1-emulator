@@ -29,6 +29,7 @@ class CRhythm
 {
 public:
 	CRhythm();
+	~CRhythm();
 
 	void Setup(CSharedData *pShared);
 

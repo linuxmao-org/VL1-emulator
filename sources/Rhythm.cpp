@@ -172,6 +172,13 @@ CRhythm::CRhythm() :
 }
 
 
+CRhythm::~CRhythm()
+{
+	SafeDeleteArray(m_pBlip);
+	SafeDeleteArray(m_pNoise);
+}
+
+
 void CRhythm::Setup(CSharedData *pShared)
 {
 	m_pShared = pShared;
