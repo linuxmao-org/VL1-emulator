@@ -1,5 +1,6 @@
 #include "UIVL1.h"
 #include "UIVL1Defs.h"
+#include "PluginVL1.h"
 #include "Window.hpp"
 #include "VL1Program.h"
 #include "resource.h"
@@ -137,6 +138,9 @@ void UIVL1::sampleRateChanged(double newSampleRate)
 */
 void UIVL1::uiIdle()
 {
+	PluginVL1 *dsp = static_cast<PluginVL1 *>((Plugin *)getPluginInstancePointer());
+
+	m_lcd->Show(dsp->GetLcdScreenData());
 }
 
 /**

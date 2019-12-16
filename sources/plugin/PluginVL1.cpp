@@ -7,6 +7,9 @@
 
 PluginVL1::PluginVL1() : Plugin(kNumParams, kNumPrograms, 0) // paramCount param(s), presetCount program(s), 0 states
 {
+	memset(&m_lcdScreenData, 0, sizeof(m_lcdScreenData));
+	m_lcdBuffer.Setup(&m_calculator, &m_lcdScreenData);
+
 	sampleRateChanged(getSampleRate());
 	loadProgram(0);
 }

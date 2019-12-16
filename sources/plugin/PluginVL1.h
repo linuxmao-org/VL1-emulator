@@ -3,6 +3,8 @@
 
 #include "DistrhoPlugin.hpp"
 #include "SharedVL1.h"
+#include "Calculator.h"
+#include "LcdBuffer.h"
 
 // -----------------------------------------------------------------------
 
@@ -52,7 +54,14 @@ protected:
 
 	// -------------------------------------------------------------------
 
+public:
+	const tLcdScreenData &GetLcdScreenData() const { return m_lcdScreenData; }
+
 private:
+	CCalculator m_calculator;
+	CLcdBuffer m_lcdBuffer;
+	tLcdScreenData m_lcdScreenData;
+
 	DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluginVL1)
 };
 

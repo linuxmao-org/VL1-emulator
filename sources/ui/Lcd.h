@@ -1,22 +1,11 @@
 #pragma once
 #include "Widget.hpp"
+#include "LcdBuffer.h"
 #include <list>
 #include <memory>
 
 
 class ImageLabel;
-
-
-enum
-{
-	kLcdLine1Size = 10,
-	kLcdLine2Size = 9,
-	//kLcdMaxLine = 2,
-	kLcdMaxChar = 9,
-	kLcdMaxSharp = 3,
-	kLcdMaxDot = 8,
-	kLcdMaxCursor = kLcdLine2Size-1,
-};
 
 
 class CLcd : public Widget
@@ -29,7 +18,7 @@ public:
 	void Open(Widget *pGroup);
 	void Close();
 
-	void Show(char *pLine1, int lineSize1, char *pLine2, int lineSize2, unsigned char dot, bool bNothing=false);
+	void Show(const tLcdScreenData &sd);
 
 private:
 	void onDisplay() override;

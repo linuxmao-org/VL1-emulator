@@ -58,22 +58,23 @@ BUILD_LADSPA ?= false
 # Files to build
 
 FILES_SHARED = \
+	sources/ADSR.cpp \
 	sources/Calculator.cpp \
+	sources/EnvelopeShaper.cpp \
+	sources/EventManager.cpp \
+	sources/Filters.cpp \
+	sources/LcdBuffer.cpp \
+	sources/LFO.cpp \
+	sources/LineInTime.cpp \
+	sources/Noise.cpp \
 	sources/Utils.cpp \
+	sources/Voice.cpp \
+	sources/Wave.cpp \
 	sources/VL1Defs.cpp \
 	sources/VL1String.cpp \
 	sources/plugin/SharedVL1.cpp
 
 FILES_DSP = \
-	sources/ADSR.cpp \
-	sources/EnvelopeShaper.cpp \
-	sources/EventManager.cpp \
-	sources/Filters.cpp \
-	sources/LFO.cpp \
-	sources/LineInTime.cpp \
-	sources/Noise.cpp \
-	sources/Voice.cpp \
-	sources/Wave.cpp \
 	sources/plugin/PluginVL1.cpp \
 	sources/plugin/meta/PluginVL1Meta.cpp \
 	$(FILES_SHARED)
@@ -105,11 +106,7 @@ BUILD_CXX_FLAGS += -Isources -Isources/plugin/meta
 # Enable all selected plugin types
 
 ifeq ($(BUILD_LV2),true)
-ifeq ($(HAVE_CAIRO),true)
-TARGETS += lv2_sep
-else
-TARGETS += lv2_dsp
-endif
+TARGETS += lv2
 endif
 
 ifeq ($(BUILD_VST2),true)

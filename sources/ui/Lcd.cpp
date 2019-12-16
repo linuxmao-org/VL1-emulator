@@ -210,26 +210,27 @@ bool CLcd::SetControlValue(ImageLabel *pControl, float value)
 }
 
 
-void CLcd::Show(char *pLine1, int lineSize1, char *pLine2, int lineSize2, unsigned char dot, bool bNothing)
+void CLcd::Show(const tLcdScreenData &sd)
 {
-	for (int i=0; i<lineSize2; i++)
+	for (int i=0; i<kLcdLine2Size; i++)
 	{
-		SetControlValue(m_pChars[i],MapChar(pLine2[i]));
+		SetControlValue(m_pChars[i],MapChar(sd.line2[i]));
 	}
 
-	SetControlValue(m_pSharp[0],MapChar(pLine1[1]));
-	SetControlValue(m_pSharp[1],MapChar(pLine1[5]));
-	SetControlValue(m_pSharp[2],MapChar(pLine1[9]));
+	SetControlValue(m_pSharp[0],MapChar(sd.line1[1]));
+	SetControlValue(m_pSharp[1],MapChar(sd.line1[5]));
+	SetControlValue(m_pSharp[2],MapChar(sd.line1[9]));
 
-	SetControlValue(m_pE,MapChar(pLine1[0]));
-	SetControlValue(m_pM,MapChar(pLine1[2]));
-	SetControlValue(m_pK,MapChar(pLine1[3]));
-	SetControlValue(m_pDiv,MapChar(pLine1[4]));
-	SetControlValue(m_pMul,MapChar(pLine1[6]));
-	SetControlValue(m_pSub,MapChar(pLine1[7]));
-	SetControlValue(m_pAdd,MapChar(pLine1[8]));
+	SetControlValue(m_pE,MapChar(sd.line1[0]));
+	SetControlValue(m_pM,MapChar(sd.line1[2]));
+	SetControlValue(m_pK,MapChar(sd.line1[3]));
+	SetControlValue(m_pDiv,MapChar(sd.line1[4]));
+	SetControlValue(m_pMul,MapChar(sd.line1[6]));
+	SetControlValue(m_pSub,MapChar(sd.line1[7]));
+	SetControlValue(m_pAdd,MapChar(sd.line1[8]));
 
 	unsigned char mask = 0x80;
+	unsigned char dot = sd.dot;
 	for (int i=0; i<8; i++)
 	{
 		SetControlValue(m_pDot[i],dot&mask?1.0f:0.0f);
