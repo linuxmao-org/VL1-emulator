@@ -68,6 +68,7 @@ FILES_SHARED = \
 	sources/LineInTime.cpp \
 	sources/Noise.cpp \
 	sources/Rhythm.cpp \
+	sources/Sequencer.cpp \
 	sources/Utils.cpp \
 	sources/Voice.cpp \
 	sources/VoiceManager.cpp \
