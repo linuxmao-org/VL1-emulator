@@ -38,22 +38,27 @@ void SharedVL1::InitParameter(uint32_t index, Parameter &parameter)
 		case kMode:
 			parameter.symbol = "Mode";
 			parameter.name = "Mode";
+			parameter.ranges.def = 1.0; // off
 			break;
 		case kVolume:
 			parameter.symbol = "Volume";
 			parameter.name = "Volume";
+			parameter.ranges.def = 0.8; // 80%
 			break;
 		case kBalance:
 			parameter.symbol = "Balance";
 			parameter.name = "Balance";
+			parameter.ranges.def = 0.5; // 50-50
 			break;
 		case kOctave:
 			parameter.symbol = "Octave";
 			parameter.name = "Octave";
+			parameter.ranges.def = 0.51; // middle
 			break;
 		case kTune:
 			parameter.symbol = "Tune";
 			parameter.name = "Tune";
+			parameter.ranges.def = 0.5; // 50%
 			break;
 		case kSound:
 			parameter.symbol = "Sound";
@@ -90,6 +95,7 @@ void SharedVL1::InitParameter(uint32_t index, Parameter &parameter)
 		case kTempo:
 			parameter.symbol = "Tempo";
 			parameter.name = "Tempo";
+			parameter.ranges.def = 0.725; // 4
 			break;
 		default:
 			DISTRHO_SAFE_ASSERT_RETURN(false, );
