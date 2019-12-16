@@ -2,6 +2,7 @@
 #include "Noise.h"
 #include "VoiceManager.h"
 #include "SharedData.h"
+#include <stdio.h>
 
 
 const tRhythmEvent gMarch[2] =
@@ -201,32 +202,47 @@ void CRhythm::Reset()
 
 bool CRhythm::MakeBlip(float frequency, int periods)
 {
+	SafeDeleteArray(m_pBlip);
+
 	float sampleRate = m_pShared ? m_pShared->sampleRate : kDefaultSampleRate;
 
 	int halfPeriod = ((int)(sampleRate/frequency) + 1) >> 1;
 
-	m_blipSize = periods*2*halfPeriod;
-	SafeDeleteArray(m_pBlip);
-	m_pBlip = new float[m_blipSize];
+	int blipSize = periods*2*halfPeriod;
+	float *pBlip = new float[blipSize]();
+
+	m_blipSize = blipSize;
+	m_pBlip = pBlip;
+
+	//
+	float *pCurrent = pBlip;
+	float *pEnd = pBlip + blipSize;
 
 	float level = 1.0f;
-	float *pBlip = m_pBlip;
 
 	for (int p=0; p<periods/2; p++)
 	{
 		// Two periods per level.
 		for (int i=0; i<2; i++)
 		{
-			for (int j=0; j<halfPeriod; j++)
+			for (int j=0; j<halfPeriod && pCurrent<pEnd; j++)
 			{
-				*(pBlip++) = level;
+				*(pCurrent++) = level;
 			}
-			for (int j=0; j<halfPeriod; j++)
+			for (int j=0; j<halfPeriod && pCurrent<pEnd; j++)
 			{
-				*(pBlip++) = 0.0f;
+				*(pCurrent++) = 0.0f;
 			}
 		}
 		level -= 1.0f/15.0f;
+	}
+
+	if (false)
+	{
+		FILE *fh = fopen("/tmp/blip.dat", "w");
+		for (int i=0; i<blipSize; ++i)
+			fprintf(fh, "%d %f\n", i, pBlip[i]);
+		fclose(fh);
 	}
 
 	return true;
@@ -243,41 +259,53 @@ bool CRhythm::MakeNoise(float oversampling)
 	float l2 = 6*0.02f; // 6 levels of 20 ms.
 	int s1 = (int)(sampleRate*oversampling*l1);
 	int s2 = (int)(sampleRate*oversampling*l2);
-	m_noiseSize = s1+s2+1;
-	m_pNoise = new float[m_noiseSize];
-	if (!m_pNoise) return false;
+	int noiseSize = s1+s2+1;
+	float *pNoise1 = new float[noiseSize]();
 
-	for (int i=0; i<m_noiseSize; i++)
-	{
-		m_pNoise[i] = 0.0f;
-	}
+	m_noiseSize = noiseSize;
+	m_pNoise = pNoise1;
 
 	float level = 1.0f;
 	CNoise noise;
-	float *pNoise = m_pNoise;
 
 	int len = (int)(sampleRate*(float)oversampling*0.005f + 0.5f);
 	int p = 8;
 
+	//
+	float *pCurrent = pNoise1;
+	float *pEnd = pNoise1 + noiseSize;
+
 	for (int i=0; i<p; i++)
 	{
-		for (int j=0; j<len; j++)
+		for (int j=0; j<len && pCurrent<pEnd; j++)
 		{
-			*(pNoise++) = level*(float)noise.Clock();
+			*(pCurrent++) = level*(float)noise.Clock();
 		}
 		level -= 1.0f/15.0f;
 	}
+
+	//
+	float *pNoise2 = pCurrent;
 
 	len = (int)(sampleRate*(float)oversampling*0.020f + 0.5f);
 	p = 6;
 
 	for (int i=0; i<p; i++)
 	{
-		for (int j=0; j<len; j++)
+		pCurrent = &pNoise2[i*len];
+		for (int j=0; j<len && pCurrent<pEnd; j++)
 		{
-			pNoise[i*len+j] = level*(float)noise.Clock();
+			*(pCurrent++) = level*(float)noise.Clock();
 		}
 		level -= 1.0f/15.0f;
+	}
+
+	if (false)
+	{
+		FILE *fh = fopen("/tmp/noise.dat", "w");
+		for (int i=0; i<noiseSize; ++i)
+			fprintf(fh, "%d %f\n", i, pNoise1[i]);
+		fclose(fh);
 	}
 
 	return true;
