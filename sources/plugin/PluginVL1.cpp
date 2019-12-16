@@ -21,15 +21,23 @@ PluginVL1::PluginVL1()
 	  m_sequencer(new CSequencer),
 	  m_rhythm(new CRhythm),
 	  m_eventManager(new CEventManager),
-	  m_voiceManager(new CVoiceManager),
-	  m_clock(new CClock)
+	  m_voices1(new CVoiceManager),
+	  m_clock(new CClock),
+	  m_parameterRanges(new ParameterRanges[kNumParams])
 {
+	for (uint32_t p=0; p<kNumParams; ++p)
+	{
+		Parameter parameter;
+		SharedVL1::InitParameter(p, parameter);
+		m_parameterRanges[p] = parameter.ranges;
+	}
+
 	m_sharedData.sampleRate = kDefaultSampleRate;
 	m_sharedData.oversampling = kDefaultOversampling;
 	m_sharedData.clock = m_clock.get();
 	m_sharedData.LCD = m_lcdBuffer.get();
 	m_sharedData.waves = m_waves.get();
-	m_sharedData.pVoices1 = m_voiceManager.get();
+	m_sharedData.pVoices1 = m_voices1.get();
 	m_sharedData.rhythm = m_rhythm.get();
 	m_sharedData.sequencer = m_sequencer.get();
 	m_sharedData.calculator = m_calculator.get();
@@ -40,9 +48,12 @@ PluginVL1::PluginVL1()
 
 	sampleRateChanged(getSampleRate());
 
-	m_eventManager->Register(m_voiceManager.get(), 0);
+	m_eventManager->Register(m_voices1.get(), 0);
 
-	loadProgram(0);
+	for (uint32_t p=0; p<kNumParams; ++p)
+	{
+		setParameterValue(p, m_parameterRanges[p].def);
+	}
 }
 
 PluginVL1::~PluginVL1()
@@ -51,6 +62,11 @@ PluginVL1::~PluginVL1()
 
 // -----------------------------------------------------------------------
 // Init
+
+void PluginVL1::initAudioPort(bool input, uint32_t index, AudioPort& port)
+{
+	SharedVL1::InitAudioPort(input, index, port);
+}
 
 void PluginVL1::initParameter(uint32_t index, Parameter &parameter)
 {
@@ -84,8 +100,10 @@ void PluginVL1::sampleRateChanged(double newSampleRate)
 	m_waves->Setup(&m_sharedData);
 	m_sequencer->Setup(&m_sharedData);
 	m_rhythm->Setup(&m_sharedData);
-	m_voiceManager->Create(1, 8, &m_sharedData);
+	m_voices1->Create(1, 8, &m_sharedData);
 	m_clock->Setup(&m_sharedData);
+	m_lp1.SetCutoff(800.0f,newSampleRate);
+	m_lp2.SetCutoff(65.0f,newSampleRate);
 }
 
 /**
@@ -93,9 +111,17 @@ void PluginVL1::sampleRateChanged(double newSampleRate)
 */
 float PluginVL1::getParameterValue(uint32_t index) const
 {
-#pragma message("TODO implement me")
+#pragma message("TODO implement me: the other parameters")
 
-	return 0;
+	switch (index)
+	{
+		case kVolume:
+			return m_volume;
+		case kBalance:
+			return m_balance;
+		default:
+			DISTRHO_SAFE_ASSERT_RETURN(false, 0);
+	}
 }
 
 /**
@@ -103,9 +129,20 @@ float PluginVL1::getParameterValue(uint32_t index) const
 */
 void PluginVL1::setParameterValue(uint32_t index, float value)
 {
-	DISTRHO_SAFE_ASSERT_RETURN(index < kNumParams, );
+#pragma message("TODO implement me: the other parameters")
 
-#pragma message("TODO implement me")
+	switch (index)
+	{
+		case kVolume:
+			m_volume = value;
+			break;
+		case kBalance:
+			m_balance = value;
+			break;
+		default:
+			DISTRHO_SAFE_ASSERT(false);
+			break;
+	}
 }
 
 /**
@@ -121,7 +158,8 @@ void PluginVL1::loadProgram(uint32_t index)
 
 	for (uint32_t param = 0; param < kNumParams; ++param)
 	{
-		setParameterValue(param, program.GetParameter(param));
+		float value = program.GetParameter(param, m_parameterRanges[param].def);
+		setParameterValue(param, value);
 	}
 }
 
@@ -136,9 +174,68 @@ void PluginVL1::activate()
 void PluginVL1::run(const float **inputs, float **outputs, uint32_t frames, const MidiEvent *midiEvents,
                     uint32_t midiEventCount)
 {
-#pragma message("TODO implement me")
-	memset(outputs[0], 0, frames * sizeof(float));
-	memset(outputs[1], 0, frames * sizeof(float));
+	float* pOut1 = outputs[0];
+	float* pOut2 = outputs[1];
+
+	uint32_t midiIndex = 0;
+	uint32_t midiInterval = 64;
+
+	int mode = GetModeI();
+	if ((mode==kVL1Off) || (mode==kVL1Cal))
+	{
+		memset(pOut1,0,sizeof(float)*frames);
+		memset(pOut2,0,sizeof(float)*frames);
+		return;
+	}
+
+	auto addEvent = [this](const MidiEvent &midiEvent)
+	{
+		if (midiEvent.size <= 4)
+		{
+			tEvent event;
+			event.midiEvent.frameTime = midiEvent.frame;
+			memcpy(event.midiEvent.midiData, midiEvent.data, 4);
+			m_eventManager->AddEvent(event);
+		}
+	};
+
+	uint32_t time = 0;
+
+	while (time<frames)
+	{
+		if (!m_clock->Tick())
+		{
+			// Auto power-off.
+			//setParameter(kMode,1.0f);
+			//return;
+		}
+
+		if (mode!=kVL1Off && time%midiInterval==0)
+		{
+			while (midiIndex<midiEventCount && time<=midiEvents[midiIndex].frame)
+				addEvent(midiEvents[midiIndex++]);
+		}
+
+		float out1 = 0.0f;
+		float out2 = 0.0f;
+
+		float balance = 0.5f*(m_balance - 0.5f);
+		out1 = (0.5f+balance)*m_voices1->Clock();
+		// Simulate the VL1's melody frequency response.
+		out1 = m_lp1.Clock(out1);
+		out1 -= m_lp2.Clock(out1);
+		// Rhythm is a bit less loud than the melody (measured ratio of 63 to 55 mVtt).
+		out2 = m_rhythm->Clock();
+		out1 += (0.5f-balance)*out2;
+
+		(*pOut1++) = m_volume*out1;
+		(*pOut2++) = m_volume*out1; //out2; temporarily shut off out2
+
+		time++;
+	}
+
+	while (midiIndex < midiEventCount)
+		addEvent(midiEvents[midiIndex++]);
 }
 
 // -----------------------------------------------------------------------

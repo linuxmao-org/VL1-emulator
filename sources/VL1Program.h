@@ -33,7 +33,7 @@ public:
 
 	~CVL1Program() {}
 
-	inline float GetParameter(unsigned int i) const
+	inline float GetParameter(unsigned int i, float defaultValue) const
 	{
 		switch (i)
 		{
@@ -45,10 +45,9 @@ public:
 			case kRelease:
 			case kVibrato:
 			case kTremolo:
-				//return m_params[i];
 				return m_data.params[i];
 		}
-		return -1.0f;
+		return defaultValue;
 	}
 
 	inline void SetParameter(unsigned int i, float p)
@@ -65,6 +64,7 @@ public:
 			case kTremolo:
 				//m_params[i] = p;
 				m_data.params[i] = p;
+				break;
 		}
 	}
 

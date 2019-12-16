@@ -8,7 +8,6 @@
 typedef struct
 {
 	unsigned char midiData[4];
-	unsigned midiSize;
 	unsigned frameTime;
 }
 tMidiEvent;

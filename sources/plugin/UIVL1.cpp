@@ -15,8 +15,16 @@
 // Init / Deinit
 
 UIVL1::UIVL1()
-	: UI(getBackgroundSize().getWidth(), getBackgroundSize().getHeight())
+	: UI(getBackgroundSize().getWidth(), getBackgroundSize().getHeight()),
+	  m_parameterRanges(new ParameterRanges[kNumParams])
 {
+	for (uint32_t p=0; p<kNumParams; ++p)
+	{
+		Parameter parameter;
+		SharedVL1::InitParameter(p, parameter);
+		m_parameterRanges[p] = parameter.ranges;
+	}
+
 	// Program Select switch
 	AddHorizontalSwitch(kProgram,kProgSelId,kProgSelX,kProgSelY,kProgSelN,kProgSelN,&m_pProgramSelector);
 
@@ -80,6 +88,7 @@ UIVL1::UIVL1()
 
 	// Display
 	m_lcd = new CLcd(this);
+	m_subWidgets.emplace_back(m_lcd);
 	m_lcd->setSize(getWidth(), getHeight());
 }
 
@@ -98,7 +107,30 @@ void UIVL1::parameterChanged(uint32_t index, float value)
 {
 	switch (index)
 	{
-#pragma message("TODO implement me")
+		case kVolume:
+			m_pVolume->setValue(value);
+			break;
+
+		case kBalance:
+			m_pBalance->setValue(value);
+			break;
+
+		case kProgram:
+			m_pProgramSelector->setValue(value);
+			break;
+
+		case kOctave:
+			m_pOctave->setValue(value);
+			break;
+
+		case kMode:
+			m_pMode->setValue(value);
+			break;
+
+		case kTune:
+			// m_pTune->setValue(value);
+			break;
+
 		default:
 			(void)value;
 	}
@@ -117,7 +149,8 @@ void UIVL1::programLoaded(uint32_t index)
 	for (uint32_t i = 0; i < kNumParams; i++)
 	{
 		// set values for each parameter and update their widgets
-		parameterChanged(i, program.GetParameter(i));
+		float value = program.GetParameter(i, m_parameterRanges[i].def);
+		parameterChanged(i, value);
 	}
 }
 

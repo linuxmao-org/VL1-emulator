@@ -3,6 +3,7 @@
 
 #include "DistrhoPlugin.hpp"
 #include "SharedVL1.h"
+#include "Filters.h"
 #include "SharedData.h"
 #include <memory>
 
@@ -29,6 +30,7 @@ protected:
 	// -------------------------------------------------------------------
 	// Init
 
+	void initAudioPort(bool input, uint32_t index, AudioPort& port) override;
 	void initParameter(uint32_t index, Parameter &parameter) override;
 	void initProgramName(uint32_t index, String &programName) override;
 
@@ -56,6 +58,8 @@ protected:
 	// -------------------------------------------------------------------
 
 public:
+	inline int GetModeI() { return m_modeI; }
+
 	const tLcdScreenData &GetLcdScreenData() const { return *m_lcdScreenData; }
 
 private:
@@ -68,8 +72,18 @@ private:
 	std::unique_ptr<CSequencer> m_sequencer;
 	std::unique_ptr<CRhythm> m_rhythm;
 	std::unique_ptr<CEventManager> m_eventManager;
-	std::unique_ptr<CVoiceManager> m_voiceManager;
+	std::unique_ptr<CVoiceManager> m_voices1;
 	std::unique_ptr<CClock> m_clock;
+
+	float m_balance = 0;
+	float m_volume = 0;
+
+	int m_modeI = kVL1Off;
+
+	CIIR1 m_lp1;
+	CIIR1 m_lp2;
+
+	std::unique_ptr<ParameterRanges[]> m_parameterRanges;
 
 	DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluginVL1)
 };

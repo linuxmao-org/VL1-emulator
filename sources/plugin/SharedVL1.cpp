@@ -22,6 +22,31 @@ const CVL1Program *SharedVL1::GetFactoryPresets()
 	return presets.data();
 }
 
+void SharedVL1::InitAudioPort(bool input, uint32_t index, AudioPort &port)
+{
+	if (input)
+	{
+		DISTRHO_SAFE_ASSERT(false);
+	}
+	else
+	{
+		switch (index)
+		{
+			case 0:
+				port.symbol = "Melody";
+				port.name = "Melody";
+				break;
+			case 1:
+				port.symbol = "Rhythm";
+				port.name = "Rhythm";
+				break;
+			default:
+				DISTRHO_SAFE_ASSERT(false);
+				break;
+		}
+	}
+}
+
 void SharedVL1::InitParameter(uint32_t index, Parameter &parameter)
 {
 	DISTRHO_SAFE_ASSERT_RETURN(index < kNumParams, );
