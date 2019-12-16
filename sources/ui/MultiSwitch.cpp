@@ -5,7 +5,7 @@
 
 ///
 MultiSwitch::MultiSwitch(ImageSkin skin, Widget *group)
-	: Widget(group), fSkin(skin)
+	: CControl(group), fSkin(skin)
 {
 	unsigned wBody = skin.getWidth();
 	unsigned hBody = skin.getHeight();
@@ -32,14 +32,8 @@ void MultiSwitch::setValue(double value)
 		return;
 
 	fValue = value;
-	if (ValueChangedCallback && fValueNotify)
-		ValueChangedCallback(value);
+	reportValueChanged(value);
 	repaint();
-}
-
-void MultiSwitch::setValueNotified(bool notified)
-{
-	fValueNotify = notified;
 }
 
 void MultiSwitch::setValueBounds(double v1, double v2)

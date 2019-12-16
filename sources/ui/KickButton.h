@@ -1,9 +1,8 @@
 #pragma once
-#include "Widget.hpp"
+#include "Control.h"
 #include "ImageSkin.h"
-#include <functional>
 
-class KickButton : public Widget
+class KickButton : public CControl
 {
 public:
 	KickButton(ImageSkin skin, Widget *group);
@@ -13,8 +12,6 @@ public:
 
 	bool onMouse(const MouseEvent &event) override;
 	void onDisplay() override;
-
-	std::function<void()> TriggerCallback;
 
 private:
 	bool fValue = false;

@@ -91,6 +91,7 @@ FILES_UI = \
 	sources/ui/BitmapCache.cpp \
 	sources/ui/ImageSkin.cpp \
 	sources/ui/ImageLabel.cpp \
+	sources/ui/Control.cpp \
 	sources/ui/KickButton.cpp \
 	sources/ui/MultiSwitch.cpp \
 	sources/ui/Slider.cpp \

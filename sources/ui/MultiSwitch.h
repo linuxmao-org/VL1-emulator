@@ -1,10 +1,9 @@
 #pragma once
+#include "Control.h"
 #include "ImageSkin.h"
-#include "Widget.hpp"
 #include "utility/CairoExtra.h"
-#include <functional>
 
-class MultiSwitch : public Widget
+class MultiSwitch : public CControl
 {
 public:
 	MultiSwitch(ImageSkin skin, Widget *group);
@@ -18,9 +17,6 @@ public:
 	double value() const noexcept { return fValue; }
 	void setValue(double value);
 
-	bool valueNotified() const { return fValueNotify; }
-	void setValueNotified(bool notified);
-
 	void setValueBounds(double v1, double v2);
 	void setNumSteps(unsigned numSteps);
 	void setOrientation(Orientation ori);
@@ -30,8 +26,6 @@ public:
 	bool onScroll(const ScrollEvent &event) override;
 	void onDisplay() override;
 
-	std::function<void(double)> ValueChangedCallback;
-
 private:
 	double clampToBounds(double value);
 
@@ -40,7 +34,6 @@ private:
 	double fValueBound1 = 0, fValueBound2 = 1;
 	unsigned fNumSteps = 100;
 	Orientation fOrientation = Horizontal;
-	bool fValueNotify = true;
 	bool fIsDragging = false;
 	ImageSkin fSkin;
 };

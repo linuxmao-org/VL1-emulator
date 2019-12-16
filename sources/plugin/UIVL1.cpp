@@ -218,6 +218,28 @@ bool UIVL1::onScroll(const ScrollEvent &ev)
 
 // -----------------------------------------------------------------------
 
+void UIVL1::controlValueChanged(CControl &control, double value)
+{
+	long tag = control.getTag();
+
+	switch (tag)
+	{
+		// TODO sliders and multi-switches
+	}
+}
+
+void UIVL1::controlTriggered(CControl &control)
+{
+	long tag = control.getTag();
+
+	switch (tag)
+	{
+		// TODO buttons
+	}
+}
+
+// -----------------------------------------------------------------------
+
 void UIVL1::AddKey(int id, int idBmp, int x, int y, int nBmp, KickButton **ppKey)
 {
 	assert(ppKey);
@@ -226,6 +248,8 @@ void UIVL1::AddKey(int id, int idBmp, int x, int y, int nBmp, KickButton **ppKey
 	KickButton *key = new KickButton(skin, this);
 	m_subWidgets.emplace_back(key);
 	key->setAbsolutePos(x, y);
+	key->setTag(id);
+	key->addListener(this);
 	*ppKey = key;
 }
 
@@ -238,6 +262,8 @@ void UIVL1::AddHorizontalSwitch(int id, int idBmp, int x, int y, int nPos, int n
 	m_subWidgets.emplace_back(sw);
 	sw->setAbsolutePos(x, y);
 	sw->setNumSteps(nPos);
+	sw->setTag(id);
+	sw->addListener(this);
 	*ppControl = sw;
 }
 
@@ -249,6 +275,8 @@ void UIVL1::AddHorizontalSlider(int id, int idBmpBody, int idBmpHandle, int x, i
 	Slider *slider = new Slider(hBmpBody, hBmpHandle, this);
 	m_subWidgets.emplace_back(slider);
 	slider->setAbsolutePos(x, y);
+	slider->setTag(id);
+	slider->addListener(this);
 	*ppControl = slider;
 }
 

@@ -4,7 +4,7 @@
 #include "Window.hpp"
 
 KickButton::KickButton(ImageSkin skin, Widget *group)
-	: Widget(group), fSkin(skin)
+	: CControl(group), fSkin(skin)
 {
 	setSize(skin.getWidth(), skin.getHeight());
 }
@@ -37,8 +37,8 @@ bool KickButton::onMouse(const MouseEvent &event)
 		if (fIsPressed)
 		{
 			fIsPressed = false;
-			if (inside && TriggerCallback)
-				TriggerCallback();
+			if (inside)
+				reportTriggered();
 			repaint();
 		}
 	}

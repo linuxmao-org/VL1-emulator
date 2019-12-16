@@ -4,7 +4,7 @@
 
 ///
 Slider::Slider(cairo_surface_t *imgBody, cairo_surface_t *imgHandle, Widget *group)
-	: Widget(group), fImgBody(imgBody), fImgHandle(imgHandle)
+	: CControl(group), fImgBody(imgBody), fImgHandle(imgHandle)
 {
 	unsigned wBody = cairo_image_surface_get_width(imgBody);
 	unsigned hBody = cairo_image_surface_get_height(imgBody);
@@ -19,14 +19,8 @@ void Slider::setValue(double value)
 		return;
 
 	fValue = value;
-	if (ValueChangedCallback && fValueNotify)
-		ValueChangedCallback(value);
+	reportValueChanged(value);
 	repaint();
-}
-
-void Slider::setValueNotified(bool notified)
-{
-	fValueNotify = notified;
 }
 
 void Slider::setValueBounds(double v1, double v2)

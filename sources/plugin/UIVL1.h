@@ -3,6 +3,7 @@
 
 #include "DistrhoUI.hpp"
 #include "SharedVL1.h"
+#include "ui/Control.h"
 #include "utility/CairoExtra.h"
 #include <list>
 
@@ -11,7 +12,7 @@ class MultiSwitch;
 class Slider;
 class CLcd;
 
-class UIVL1 : public UI
+class UIVL1 : public UI, public CControlListener
 {
 public:
 	UIVL1();
@@ -32,6 +33,10 @@ protected:
 	bool onMouse(const MouseEvent &ev) override;
 	bool onMotion(const MotionEvent &ev) override;
 	bool onScroll(const ScrollEvent &ev) override;
+
+protected:
+	void controlValueChanged(CControl &control, double value) override;
+	void controlTriggered(CControl &control) override;
 
 private:
 	static Size<uint> getBackgroundSize();
