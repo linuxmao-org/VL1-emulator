@@ -22,23 +22,21 @@ enum
 
 
 
-typedef struct
+struct tSequencerEvent
 {
 	float time; // in ms or in note length
 	unsigned char midi[4];
 	unsigned int flags;
-}
-tSequencerEvent;
+};
 
 
-typedef struct
+struct tSequencerEventArrayState
 {
 	tSequencerEvent data[kMaxSongLength+1];
 	int maxEvents;
 	int currentEvent;
 	int lastEvent;
-}
-tSequencerEventArrayState;
+};
 
 
 class CSequencerEventArray
@@ -73,7 +71,7 @@ private:
 
 
 
-typedef struct
+struct tSequencerState
 {
 	bool bIsPlaying;
 	bool bPaused;
@@ -81,8 +79,7 @@ typedef struct
 	//long time;
 	//long startTime;
 	tSequencerEventArrayState song;
-}
-tSequencerState;
+};
 
 
 

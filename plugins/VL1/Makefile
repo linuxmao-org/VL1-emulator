@@ -61,6 +61,7 @@ FILES_SHARED = \
 	sources/ADSR.cpp \
 	sources/Calculator.cpp \
 	sources/Clock.cpp \
+	sources/DemoSong.cpp \
 	sources/EnvelopeShaper.cpp \
 	sources/EventManager.cpp \
 	sources/Filters.cpp \
