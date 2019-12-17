@@ -27,7 +27,7 @@ public:
 	int GetTrigger() { return m_triggerCounter; }
 
 	// Implementation of CMidiInput class.
-	bool ProcessEvent(tEvent& event);
+	bool ProcessEvent(const tEvent& event);
 
 private:
 	void Initialize();

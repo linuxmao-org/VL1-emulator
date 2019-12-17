@@ -48,7 +48,7 @@ PluginVL1::PluginVL1()
 
 	sampleRateChanged(getSampleRate());
 
-	m_eventManager->Register(m_voices1.get(), 0);
+	m_eventManager->Register(m_voices1.get());
 
 	for (uint32_t p=0; p<kNumParams; ++p)
 	{
@@ -193,14 +193,13 @@ void PluginVL1::run(const float **inputs, float **outputs, uint32_t frames, cons
 		return;
 	}
 
-	auto addEvent = [this](const MidiEvent &midiEvent)
+	auto sendMidi = [this](const MidiEvent &midiEvent)
 	{
 		if (midiEvent.size <= 4)
 		{
 			tEvent event;
-			event.midiEvent.frameTime = midiEvent.frame;
 			memcpy(event.midiEvent.midiData, midiEvent.data, 4);
-			m_eventManager->AddEvent(event);
+			m_eventManager->SendEvent(event);
 		}
 	};
 
@@ -215,10 +214,10 @@ void PluginVL1::run(const float **inputs, float **outputs, uint32_t frames, cons
 			//return;
 		}
 
-		if (mode!=kVL1Off && time%midiInterval==0)
+		if (time%midiInterval==0)
 		{
 			while (midiIndex<midiEventCount && time<=midiEvents[midiIndex].frame)
-				addEvent(midiEvents[midiIndex++]);
+				sendMidi(midiEvents[midiIndex++]);
 		}
 
 		float out1 = 0.0f;
@@ -240,7 +239,7 @@ void PluginVL1::run(const float **inputs, float **outputs, uint32_t frames, cons
 	}
 
 	while (midiIndex < midiEventCount)
-		addEvent(midiEvents[midiIndex++]);
+		sendMidi(midiEvents[midiIndex++]);
 }
 
 // -----------------------------------------------------------------------

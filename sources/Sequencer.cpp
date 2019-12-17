@@ -243,7 +243,7 @@ void CSequencer::DoEvent(const tSequencerEvent& event)
 {
 	TRACE("CSequencer::DoEvent\n");
 	memcpy(m_event.midiEvent.midiData,event.midi,4*sizeof(char));
-	m_pShared->eventManager->AddEvent(m_event);
+	m_pShared->eventManager->SendEvent(m_event);
 }
 
 

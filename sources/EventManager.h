@@ -3,12 +3,12 @@
 
 
 #include "Utils.h"
+#include <vector>
 
 
 typedef struct
 {
 	unsigned char midiData[4];
-	unsigned frameTime;
 }
 tMidiEvent;
 
@@ -20,19 +20,11 @@ typedef struct
 tEvent;
 
 
-#include <deque>
-using namespace std;
-typedef	deque<tEvent> tEventDeque;
-
-
 class CEventInput
 {
 public:
-	virtual bool ProcessEvent(tEvent& event) = 0;
+	virtual bool ProcessEvent(const tEvent &event) = 0;
 };
-
-
-#define kMaxListeners  16 // For 16 midi channels.
 
 
 class CEventManager
@@ -41,17 +33,12 @@ public:
 	CEventManager();
 	~CEventManager();
 
-	void Register(CEventInput *pListener, char channel);
+	void Register(CEventInput *pListener);
 
-	bool AddEvent(tEvent& event);
-	void AdjustTime(long time);
-	void Clock(long time);
+	void SendEvent(const tEvent &event);
 
 private:
-	tEventDeque m_eventFifo;
-	bool AddEventSorted(tEvent& event);
-	bool HandleEvent(tEvent& event);
-	CEventInput *m_pListener[kMaxListeners];
+	std::vector<CEventInput *> m_pListener;
 
 	//void Initialize();
 };

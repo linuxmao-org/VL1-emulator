@@ -47,7 +47,7 @@ long CClock::Tick()
 	CSequencer *sequencer = m_pShared->sequencer;
 	CRhythm *rhythm = m_pShared->rhythm;
 	CVoiceManager *pVoices1 = m_pShared->pVoices1;
-	CEventManager *eventManager = m_pShared->eventManager;
+	//CEventManager *eventManager = m_pShared->eventManager;
 	CLcdBuffer *LCD = m_pShared->LCD;
 
 	// jpc: don't use a power-off watchdog
@@ -93,7 +93,7 @@ long CClock::Tick()
 		LCD->Tick();
 	}
 
-	eventManager->Clock(0);
+	//eventManager->Clock(0);
 
 	return gAutoPowerOffWatchdog;
 }

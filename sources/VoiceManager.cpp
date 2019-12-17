@@ -170,7 +170,7 @@ bool CVoiceManager::NoteOff(char note, char velocity)
 // Implementation of CEventInput class.
 /////////////////////////////////////////////////////////////////
 
-bool CVoiceManager::ProcessEvent(tEvent& event)
+bool CVoiceManager::ProcessEvent(const tEvent& event)
 {
 	unsigned char value0 = (unsigned char) event.midiEvent.midiData[0];
 	unsigned char value1 = (unsigned char) event.midiEvent.midiData[1];
