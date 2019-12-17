@@ -258,7 +258,63 @@ void UIVL1::controlValueChanged(CControl &control)
 
 	switch (tag)
 	{
-		// TODO sliders and multi-switches
+#pragma message("TODO the rest of the controls")
+
+		case kTune: // Control not yet implemented.
+		case kMode:
+		case kProgram:
+		case kOctave:
+		case kBalance:
+		case kVolume:
+			setParameterValue(tag,value);
+			break;
+
+		// case kKeyOneKeyPlayDotDot:
+		// case kKeyOneKeyPlayDot:
+		// 	effect->setParameterAutomated(tag,value);
+		// 	break;
+
+		// case kKeyReset:
+		// case kKeyDel:
+		// case kKeyTempoUp:
+		// case kKeyTempoDown:
+		// case kKeyMLC:
+		// case kKeyMusic:
+		// case kKeyAutoPlay:
+		// 	// Key down only.
+		// 	if (value!=0) effect->setParameterAutomated(tag,value);
+		// 	break;
+
+		case kKeyRhythm:
+			if (value!=0)
+			{
+				// Key down only.
+				if (!m_bSelectRhythm)
+				{
+					// Two key sequence, step one.
+					m_bSelectRhythm = true;
+				}
+			}
+			break;
+
+		// default:
+		// 	if (tag>=kKeyPlusMin && tag<=kKeyEqual)
+		// 	{
+		// 		// Black and white keys only.
+		// 		if (m_bSelectRhythm)
+		// 		{
+		// 			// Key down only.
+		// 			if (value!=0)
+		// 			{
+		// 				// Two key sequence, step two.
+		// 				m_bSelectRhythm = FALSE;
+		// 				value = KeyToRhythm(tag);
+		// 				if (value>=0) effect->setParameterAutomated(kKeyRhythm,value);
+		// 			}
+		// 		}
+		// 		// Key up and down.
+		// 		else ((CVL1*)effect)->HandleKey(tag,value);
+		// 	}
 	}
 }
 

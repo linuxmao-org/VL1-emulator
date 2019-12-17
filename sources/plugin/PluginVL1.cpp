@@ -119,6 +119,8 @@ float PluginVL1::getParameterValue(uint32_t index) const
 			return m_volume;
 		case kBalance:
 			return m_balance;
+		case kMode:
+			return m_modeI/3.0f;
 		default:
 			DISTRHO_SAFE_ASSERT_RETURN(false, 0);
 	}
@@ -138,6 +140,9 @@ void PluginVL1::setParameterValue(uint32_t index, float value)
 			break;
 		case kBalance:
 			m_balance = value;
+			break;
+		case kMode:
+			OnMode((int)lroundf(3.0f*value));
 			break;
 		default:
 			DISTRHO_SAFE_ASSERT(false);
@@ -236,6 +241,46 @@ void PluginVL1::run(const float **inputs, float **outputs, uint32_t frames, cons
 
 	while (midiIndex < midiEventCount)
 		addEvent(midiEvents[midiIndex++]);
+}
+
+// -----------------------------------------------------------------------
+
+void PluginVL1::Reset()
+{
+	m_bDemoSong = false;
+	m_bOneKeyPlay = false;
+	m_bIgnoreNextEvent = false;
+	m_voices1->Reset();
+	m_sequencer->Reset();
+	m_rhythm->Reset();
+	m_clock->Reset();
+	m_calculator->Clear(true,false);
+	m_lcdBuffer->SetMode(m_modeI);
+}
+
+void PluginVL1::OnMode(int mode)
+{
+	switch (mode)
+	{
+		default:
+		case 0:
+			m_modeI = kVL1Play;
+			break;
+
+		case 1:
+			m_modeI = kVL1Rec;
+			break;
+
+		case 2:
+			m_modeI = kVL1Cal;
+			break;
+
+		case 3:
+			m_modeI = kVL1Off;
+			break;
+	}
+
+	Reset();
 }
 
 // -----------------------------------------------------------------------

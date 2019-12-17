@@ -60,6 +60,9 @@ protected:
 public:
 	inline int GetModeI() { return m_modeI; }
 
+	void Reset();
+	void OnMode(int mode);
+
 	const tLcdScreenData &GetLcdScreenData() const { return *m_lcdScreenData; }
 
 private:
@@ -79,6 +82,9 @@ private:
 	float m_volume = 0;
 
 	int m_modeI = kVL1Off;
+	bool m_bDemoSong = false;
+	bool m_bOneKeyPlay = false;
+	bool m_bIgnoreNextEvent = false;
 
 	CIIR1 m_lp1;
 	CIIR1 m_lp2;

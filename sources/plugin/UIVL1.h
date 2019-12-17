@@ -65,6 +65,8 @@ private:
 
 	CLcd *m_lcd;
 
+	bool m_bSelectRhythm = false;
+
 	std::list<std::unique_ptr<Widget>> m_subWidgets;
 
 	std::unique_ptr<ParameterRanges[]> m_parameterRanges;
