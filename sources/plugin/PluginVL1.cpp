@@ -186,9 +186,6 @@ void PluginVL1::setParameterValue(uint32_t index, float value)
 {
 	value = SharedVL1::ParameterValueTo01(index, value);
 
-	tParameterRange range = m_parameterRanges[index];
-	value = Clipf(range.min, value, range.max);
-
 	switch (index)
 	{
 		case kMode:
@@ -730,8 +727,7 @@ float PluginVL1::GetTempoUpDown(bool bUp) const
 	float delta = bUp? 1.0f/18.0f : -1.0f/18.0f;
 	delta += 0.001f; // make sure to be in an interval.
 	fTempo += delta;
-	tParameterRange range = m_parameterRanges[kTempo];
-	return Clipf(range.min,fTempo,range.max);
+	return Clipf(0.0f,fTempo,1.0f);
 }
 
 

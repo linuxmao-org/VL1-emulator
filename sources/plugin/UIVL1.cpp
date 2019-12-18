@@ -104,6 +104,11 @@ PluginVL1 *UIVL1::getDsp() const
 		reinterpret_cast<Plugin *>(getPluginInstancePointer()));
 }
 
+void UIVL1::setParameterValue01(uint32_t index, float value)
+{
+	setParameterValue(index, SharedVL1::ParameterValueFrom01(index, value));
+}
+
 // -----------------------------------------------------------------------
 // DSP/Plugin callbacks
 
@@ -153,7 +158,9 @@ void UIVL1::parameterChanged(uint32_t index, float value)
 		for (unsigned p = 0; p < kNumParams && bIsSame; ++p)
 		{
 			float value = program.GetParameter(p, HUGE_VALF);
-			bIsSame = (value == HUGE_VALF) || (pValues[p] == value);
+			bIsSame = (value == HUGE_VALF) || d_isEqual(
+				SharedVL1::ParameterValueTo01(p, pValues[p]),
+				SharedVL1::ParameterValueTo01(p, value));
 		}
 		if (bIsSame)
 		{
@@ -372,7 +379,7 @@ void UIVL1::controlValueChanged(CControl &control)
 			{
 				float value = program.GetParameter(p, HUGE_VALF);
 				if (value != HUGE_VALF)
-					setParameterValue(p, value);
+					setParameterValue01(p, value);
 			}
 		}
 		break;
@@ -382,7 +389,7 @@ void UIVL1::controlValueChanged(CControl &control)
 		case kOctave:
 		case kBalance:
 		case kVolume:
-			setParameterValue(tag,value);
+			setParameterValue01(tag,value);
 			break;
 
 		case kKeyOneKeyPlayDotDot:
@@ -414,7 +421,7 @@ void UIVL1::controlValueChanged(CControl &control)
 				{
 					float value = program.GetParameter(p, HUGE_VALF);
 					if (value != HUGE_VALF)
-						setParameterValue(p, value);
+						setParameterValue01(p, value);
 				}
 			}
 		}
@@ -438,7 +445,7 @@ void UIVL1::controlValueChanged(CControl &control)
 				// jpc: tempo parameter must be changed from Editor
 				if (mode==kVL1Play || mode==kVL1Rec)
 				{
-					setParameterValue(kTempo, dsp->GetTempoUpDown(tag == kKeyTempoUp));
+					setParameterValue01(kTempo, dsp->GetTempoUpDown(tag == kKeyTempoUp));
 				}
 				else if (mode==kVL1Cal)
 				{
@@ -477,7 +484,7 @@ void UIVL1::controlValueChanged(CControl &control)
 				{
 					if (!dsp->IsPlayingDemoSong())
 					{
-						setParameterValue(kTempo,0.5f); // tempo = 0
+						setParameterValue(kTempo,0); // tempo = 0
 
 						dsp->PerformEditSynchronous([dsp]
 						{
@@ -498,7 +505,7 @@ void UIVL1::controlValueChanged(CControl &control)
 			if (value!=0)
 			{
 				// jpc: need to this change this parameter from Editor
-				setParameterValue(kTempo,0.725f); // tempo = 4
+				setParameterValue(kTempo,4); // tempo = 4
 
 				PluginVL1 *dsp = getDsp();
 				dsp->PerformEditSynchronous([dsp] { dsp->OnMusic(); });

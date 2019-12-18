@@ -21,6 +21,8 @@ public:
 
 	PluginVL1 *getDsp() const;
 
+	void setParameterValue01(uint32_t index, float value);
+
 protected:
 	void parameterChanged(uint32_t, float value) override;
 	void programLoaded(uint32_t index) override;
