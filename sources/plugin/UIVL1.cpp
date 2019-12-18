@@ -160,7 +160,8 @@ void UIVL1::parameterChanged(uint32_t index, float value)
 	}
 	if (programSelection == -1)
 		programSelection = kProgramAdsr;
-	m_pProgramSelector->setValue(programSelection, CControl::kDoNotNotify);
+	m_pProgramSelector->setValue(
+		programSelection * (1.0 / (kNumPrograms - 1)), CControl::kDoNotNotify);
 }
 
 /**
