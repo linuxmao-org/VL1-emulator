@@ -62,10 +62,6 @@ void SharedVL1::InitParameter(uint32_t index, Parameter &parameter)
 
 	switch (index)
 	{
-		case kProgram:
-			parameter.symbol = "Program";
-			parameter.name = "Program";
-			break;
 		case kMode:
 			parameter.symbol = "Mode";
 			parameter.name = "Mode";

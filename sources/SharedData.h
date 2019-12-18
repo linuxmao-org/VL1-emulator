@@ -10,9 +10,11 @@ class CSequencer;
 class CCalculator;
 class CEventManager;
 struct tLcdScreenData;
+struct tParameterRange;
 
-struct CSharedData
+class CSharedData
 {
+public:
 	float sampleRate;
 	int oversampling;
 	CClock *clock;
@@ -25,4 +27,5 @@ struct CSharedData
 	CCalculator *calculator;
 	CEventManager *eventManager;
 	tLcdScreenData *screenData;
+	const tParameterRange *parameterRanges;
 };

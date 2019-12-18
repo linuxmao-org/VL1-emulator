@@ -17,13 +17,14 @@
 
 UIVL1::UIVL1()
 	: UI(getBackgroundSize().getWidth(), getBackgroundSize().getHeight()),
-	  m_parameterRanges(new ParameterRanges[kNumParams])
+	  m_parameterValues(new float[kNumParams])
 {
+	PluginVL1 *dsp = getDsp();
+	const CSharedData *pShared = dsp->GetSharedData();
+
 	for (uint32_t p=0; p<kNumParams; ++p)
 	{
-		Parameter parameter;
-		SharedVL1::InitParameter(p, parameter);
-		m_parameterRanges[p] = parameter.ranges;
+		m_parameterValues[p] = pShared->parameterRanges[p].def;
 	}
 
 	// Program Select switch
@@ -112,6 +113,10 @@ PluginVL1 *UIVL1::getDsp() const
 */
 void UIVL1::parameterChanged(uint32_t index, float value)
 {
+	float *pValues = m_parameterValues.get();
+
+	pValues[index] = value;
+
 	switch (index)
 	{
 		case kVolume:
@@ -120,10 +125,6 @@ void UIVL1::parameterChanged(uint32_t index, float value)
 
 		case kBalance:
 			m_pBalance->setValue(value);
-			break;
-
-		case kProgram:
-			m_pProgramSelector->setValue(value);
 			break;
 
 		case kOctave:
@@ -137,10 +138,29 @@ void UIVL1::parameterChanged(uint32_t index, float value)
 		case kTune:
 			// m_pTune->setValue(value);
 			break;
-
-		default:
-			(void)value;
 	}
+
+	// jpc: to handle the program button: if the parameter set has its ADSR
+	//      equal to one of the presets, set the button to this position,
+	//      otherwise set it to ADSR.
+	int programSelection = -1;
+	for (unsigned i = 0; i < kNumPrograms && programSelection == -1; ++i)
+	{
+		const CVL1Program &program = SharedVL1::GetFactoryPresets()[i];
+		bool bIsSame = true;
+		for (unsigned p = 0; p < kNumParams && bIsSame; ++p)
+		{
+			float value = program.GetParameter(p, HUGE_VALF);
+			bIsSame = (value == HUGE_VALF) || (pValues[p] == value);
+		}
+		if (bIsSame)
+		{
+			programSelection = i;
+		}
+	}
+	if (programSelection == -1)
+		programSelection = kProgramAdsr;
+	m_pProgramSelector->setValue(programSelection, CControl::kDoNotNotify);
 }
 
 /**
@@ -154,11 +174,12 @@ void UIVL1::programLoaded(uint32_t index)
 	m_curProgram = index;
 
 	const CVL1Program &program = SharedVL1::GetFactoryPresets()[index];
+	const tParameterRange *ranges = getDsp()->GetSharedData()->parameterRanges;
 
 	for (uint32_t i = 0; i < kNumParams; i++)
 	{
 		// set values for each parameter and update their widgets
-		float value = program.GetParameter(i, m_parameterRanges[i].def);
+		float value = program.GetParameter(i, ranges[i].def);
 		parameterChanged(i, value);
 	}
 }
@@ -307,9 +328,38 @@ void UIVL1::controlValueChanged(CControl &control)
 
 	switch (tag)
 	{
+		case kProgram:
+		{
+			// jpc: this loads a part of parameters: sound and envelope.
+			// if it's the special ADSR program, envelope data is recalled
+			// from the calculator memory.
+
+			CVL1Program program;
+			int nProgram = (int)lround(value*(kNumPrograms-1));
+
+			if (nProgram != kProgramAdsr)
+			{
+				program.LoadPreset("", gVL1Preset[nProgram]);
+			}
+			else
+			{
+				PluginVL1 *dsp = getDsp();
+				tVL1Preset preset;
+				dsp->PerformEditSynchronous([dsp, &preset] { dsp->GetAdsrPreset(preset); });
+				program.LoadPreset("", preset);
+			}
+
+			for (unsigned p = 0; p < kNumParams; ++p)
+			{
+				float value = program.GetParameter(p, HUGE_VALF);
+				if (value != HUGE_VALF)
+					setParameterValue(p, value);
+			}
+		}
+		break;
+
 		case kTune: // Control not yet implemented.
 		case kMode:
-		case kProgram:
 		case kOctave:
 		case kBalance:
 		case kVolume:

@@ -104,9 +104,10 @@ void CVoice::Reset()
 
 void CVoice::SetParameter(int param, float value)
 {
-	value = Clipf(0.0f,value,1.0f);
-
 	CWaveSet *waves = m_pShared->waves;
+	tParameterRange range = m_pShared->parameterRanges[param];
+
+	value = Clipf(range.min, value, range.max);
 
 	switch (param)
 	{

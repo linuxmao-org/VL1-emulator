@@ -27,6 +27,14 @@ static Ignorable const float kMinTempoPeriod = 0.170f; // sec
 #define kDefaultOversampling  16
 
 
+struct tParameterRange
+{
+	float def;
+	float min;
+	float max;
+};
+
+
 // Constants
 enum
 {
@@ -92,8 +100,7 @@ enum
 
 	// Parameters Tags
 	// The order is important for the display in the host.
-	kProgram = 0,
-	kMode,
+	kMode = 0,
 	kVolume,
 	kBalance,
 	kOctave,
@@ -108,6 +115,9 @@ enum
 	kTremolo,
 	kTempo,
 	kNumParams, // This should always be the last parameter.
+
+	// jpc: make kProgram not be a parameter anymore, but keep the enum around
+	kProgram = 40,
 
 	// Keyboard
 	kKeyPlusMin = 55,

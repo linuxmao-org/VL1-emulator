@@ -14,8 +14,14 @@ public:
 	intptr_t getTag() const noexcept { return fTag; }
 	void setTag(intptr_t tag) noexcept { fTag = tag; }
 
+	enum NotifyMode
+	{
+		kNotify,
+		kDoNotNotify,
+	};
+
 	double getValue() { return fValue; }
-	virtual void setValue(double value);
+	virtual void setValue(double value, NotifyMode notify = kNotify);
 
 	void addListener(CControlListener *cl);
 	void removeListener(CControlListener *cl);

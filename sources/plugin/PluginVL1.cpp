@@ -29,13 +29,16 @@ PluginVL1::PluginVL1()
 	  m_eventManager(new CEventManager),
 	  m_voices1(new CVoiceManager),
 	  m_clock(new CClock),
-	  m_parameterRanges(new ParameterRanges[kNumParams])
+	  m_parameterRanges(new tParameterRange[kNumParams])
 {
 	for (uint32_t p=0; p<kNumParams; ++p)
 	{
 		Parameter parameter;
 		SharedVL1::InitParameter(p, parameter);
-		m_parameterRanges[p] = parameter.ranges;
+		tParameterRange &range = m_parameterRanges[p];
+		range.def = parameter.ranges.def;
+		range.min = parameter.ranges.min;
+		range.max = parameter.ranges.max;
 	}
 
 	m_sharedData.sampleRate = kDefaultSampleRate;
@@ -49,6 +52,7 @@ PluginVL1::PluginVL1()
 	m_sharedData.calculator = m_calculator.get();
 	m_sharedData.eventManager = m_eventManager.get();
 	m_sharedData.screenData = m_lcdScreenData.get();
+	m_sharedData.parameterRanges = m_parameterRanges.get();
 
 	memset(m_lcdScreenData.get(), 0, sizeof(tLcdScreenData));
 
@@ -117,12 +121,8 @@ void PluginVL1::sampleRateChanged(double newSampleRate)
 */
 float PluginVL1::getParameterValue(uint32_t index) const
 {
-#pragma message("TODO implement me: the other parameters")
-
 	switch (index)
 	{
-		// case kProgram:
-		// 	return;
 		case kMode:
 			return m_modeI/3.0f;
 		case kVolume:
@@ -161,12 +161,11 @@ float PluginVL1::getParameterValue(uint32_t index) const
 */
 void PluginVL1::setParameterValue(uint32_t index, float value)
 {
-#pragma message("TODO implement me: the other parameters")
+	tParameterRange range = m_parameterRanges[index];
+	value = Clipf(range.min, value, range.max);
 
 	switch (index)
 	{
-		// case kProgram:
-		// 	break;
 		case kMode:
 			OnMode((int)lroundf(3.0f*value));
 			break;
@@ -669,13 +668,34 @@ void PluginVL1::ResetSound()
 }
 
 
+void PluginVL1::GetAdsrPreset(tVL1Preset &preset)
+{
+	memcpy(preset, gVL1Preset[kProgramAdsr], sizeof(tVL1Preset));
+
+	if (m_calculator->GetM())
+	{
+		CVL1String str = m_calculator->GetMAsString();
+		str.StripDot();
+		int j = 7;
+		for (int i=str.Length()-1; i>=0 && j>=0; i--, j--)
+		{
+			char ch = str.GetAt(i);
+			if (ch<'0' || ch>'9') break;
+			//adsr[j+10] = 0.01f*(float)ch;
+			preset[j] = 0.1f*(ch-'0');
+		}
+	}
+}
+
+
 float PluginVL1::GetTempoUpDown(bool bUp) const
 {
 	float fTempo = (m_clock->GetTempo()+9)/18.0f;
 	float delta = bUp? 1.0f/18.0f : -1.0f/18.0f;
 	delta += 0.001f; // make sure to be in an interval.
 	fTempo += delta;
-	return Clipf(0.0f,fTempo,1.0f);
+	tParameterRange range = m_parameterRanges[kTempo];
+	return Clipf(range.min,fTempo,range.max);
 }
 
 

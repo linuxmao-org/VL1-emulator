@@ -62,6 +62,9 @@ protected:
 	// -------------------------------------------------------------------
 
 public:
+	CSharedData *GetSharedData() { return &m_sharedData; }
+	const CSharedData *GetSharedData() const { return &m_sharedData; }
+
 	int GetModeI() { return m_modeI; }
 	bool IsPlayingDemoSong() const { return m_bDemoSong; }
 
@@ -84,6 +87,8 @@ public:
 	void AutoPlay();
 	void OneKeyPlay();
 	void ResetSound();
+
+	void GetAdsrPreset(tVL1Preset &preset);
 
 	const tLcdScreenData &GetLcdScreenData() const { return *m_lcdScreenData; }
 	float GetTempoUpDown(bool bUp) const;
@@ -127,7 +132,7 @@ private:
 	CIIR1 m_lp1;
 	CIIR1 m_lp2;
 
-	std::unique_ptr<ParameterRanges[]> m_parameterRanges;
+	std::unique_ptr<tParameterRange[]> m_parameterRanges;
 
 	bool fIsActive = false;
 	std::mutex fRunMutex;

@@ -11,9 +11,9 @@ Slider::Slider(cairo_surface_t *imgBody, cairo_surface_t *imgHandle, Widget *gro
 	setSize(wBody, hBody);
 }
 
-void Slider::setValue(double value)
+void Slider::setValue(double value, NotifyMode notify)
 {
-	CControl::setValue(clampToBounds(value));
+	CControl::setValue(clampToBounds(value), notify);
 }
 
 void Slider::setValueBounds(double v1, double v2)

@@ -74,7 +74,7 @@ private:
 
 	std::list<std::unique_ptr<Widget>> m_subWidgets;
 
-	std::unique_ptr<ParameterRanges[]> m_parameterRanges;
+	std::unique_ptr<float[]> m_parameterValues;
 
 private:
 	DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(UIVL1)

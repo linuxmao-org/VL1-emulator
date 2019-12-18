@@ -14,7 +14,7 @@ public:
 		Vertical,
 	};
 
-	void setValue(double value) override;
+	void setValue(double value, NotifyMode notify = kNotify) override;
 
 	void setValueBounds(double v1, double v2);
 	void setNumSteps(unsigned numSteps);

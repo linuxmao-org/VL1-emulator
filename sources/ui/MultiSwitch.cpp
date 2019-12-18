@@ -12,7 +12,7 @@ MultiSwitch::MultiSwitch(ImageSkin skin, Widget *group)
 	setSize(wBody, hBody);
 }
 
-void MultiSwitch::setValue(double value)
+void MultiSwitch::setValue(double value, NotifyMode notify)
 {
 	double v1 = fValueBound1;
 	double v2 = fValueBound2;
@@ -24,7 +24,7 @@ void MultiSwitch::setValue(double value)
 		value = std::round(fill * (n - 1)) / (n - 1) * (v2 - v1) + v1;
 	}
 
-	CControl::setValue(clampToBounds(value));
+	CControl::setValue(clampToBounds(value), notify);
 }
 
 void MultiSwitch::setValueBounds(double v1, double v2)

@@ -1,14 +1,17 @@
 #include "Control.h"
 
-void CControl::setValue(double value)
+void CControl::setValue(double value, NotifyMode notify)
 {
 	if (fValue == value)
 		return;
 
 	fValue = value;
 
-	for (CControlListener *cl : fListeners)
-		cl->controlValueChanged(*this);
+	if (notify == kNotify)
+	{
+		for (CControlListener *cl : fListeners)
+			cl->controlValueChanged(*this);
+	}
 
 	repaint();
 }
