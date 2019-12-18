@@ -113,6 +113,8 @@ PluginVL1 *UIVL1::getDsp() const
 */
 void UIVL1::parameterChanged(uint32_t index, float value)
 {
+	value = SharedVL1::ParameterValueTo01(index, value);
+
 	float *pValues = m_parameterValues.get();
 
 	pValues[index] = value;
@@ -185,7 +187,11 @@ void UIVL1::programLoaded(uint32_t index)
 	for (uint32_t i = 0; i < kNumParams; i++)
 	{
 		// set values for each parameter and update their widgets
-		float value = program.GetParameter(i, ranges[i].def);
+		float value = program.GetParameter(i, HUGE_VALF);
+		if (value == HUGE_VALF)
+			value = ranges[i].def;
+		else
+			value = SharedVL1::ParameterValueFrom01(i, value);
 		parameterChanged(i, value);
 	}
 }

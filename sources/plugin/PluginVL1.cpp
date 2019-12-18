@@ -29,7 +29,8 @@ PluginVL1::PluginVL1()
 	  m_eventManager(new CEventManager),
 	  m_voices1(new CVoiceManager),
 	  m_clock(new CClock),
-	  m_parameterRanges(new tParameterRange[kNumParams])
+	  m_parameterRanges(new tParameterRange[kNumParams]),
+	  m_parameterHints(new uint32_t[kNumParams])
 {
 	for (uint32_t p=0; p<kNumParams; ++p)
 	{
@@ -39,6 +40,7 @@ PluginVL1::PluginVL1()
 		range.def = parameter.ranges.def;
 		range.min = parameter.ranges.min;
 		range.max = parameter.ranges.max;
+		m_parameterHints[p] = parameter.hints;
 	}
 
 	m_sharedData.sampleRate = kDefaultSampleRate;
@@ -53,6 +55,7 @@ PluginVL1::PluginVL1()
 	m_sharedData.eventManager = m_eventManager.get();
 	m_sharedData.screenData = m_lcdScreenData.get();
 	m_sharedData.parameterRanges = m_parameterRanges.get();
+	m_sharedData.parameterHints = m_parameterHints.get();
 
 	memset(m_lcdScreenData.get(), 0, sizeof(tLcdScreenData));
 
@@ -121,39 +124,59 @@ void PluginVL1::sampleRateChanged(double newSampleRate)
 */
 float PluginVL1::getParameterValue(uint32_t index) const
 {
+	float value = 0;
+
 	switch (index)
 	{
 		case kMode:
-			return m_modeI/3.0f;
+			value = m_modeI/3.0f;
+			break;
 		case kVolume:
-			return m_volume;
+			value = m_volume;
+			break;
 		case kBalance:
-			return m_balance;
+			value = m_balance;
+			break;
 		case kOctave:
-			return m_octave;
+			value = m_octave;
+			break;
 		case kTune:
-			return m_tune;
+			value = m_tune;
+			break;
 		case kSound:
-			return m_adsr[0];
+			value = m_adsr[0];
+			break;
 		case kAttack:
-			return m_adsr[1];
+			value = m_adsr[1];
+			break;
 		case kDecay:
-			return m_adsr[2];
+			value = m_adsr[2];
+			break;
 		case kSustainLevel:
-			return m_adsr[3];
+			value = m_adsr[3];
+			break;
 		case kSustainTime:
-			return m_adsr[4];
+			value = m_adsr[4];
+			break;
 		case kRelease:
-			return m_adsr[5];
+			value = m_adsr[5];
+			break;
 		case kVibrato:
-			return m_adsr[6];
+			value = m_adsr[6];
+			break;
 		case kTremolo:
-			return m_adsr[7];
+			value = m_adsr[7];
+			break;
 		case kTempo:
-			return m_tempo;
+			value = m_tempo;
+			break;
 		default:
 			DISTRHO_SAFE_ASSERT_RETURN(false, 0);
 	}
+
+	value = SharedVL1::ParameterValueFrom01(index, value);
+
+	return value;
 }
 
 /**
@@ -161,6 +184,8 @@ float PluginVL1::getParameterValue(uint32_t index) const
 */
 void PluginVL1::setParameterValue(uint32_t index, float value)
 {
+	value = SharedVL1::ParameterValueTo01(index, value);
+
 	tParameterRange range = m_parameterRanges[index];
 	value = Clipf(range.min, value, range.max);
 
@@ -207,7 +232,7 @@ void PluginVL1::setParameterValue(uint32_t index, float value)
 			break;
 		case kTempo:
 			m_tempo = value;
-			m_clock->SetTempo((int)floorf(18.0f*m_tempo)-9);
+			m_clock->SetTempo((int)lroundf(18.0f*m_tempo)-9);
 			m_lcdBuffer->SetTempo(m_clock->GetTempo());
 			break;
 		default:
@@ -231,7 +256,11 @@ void PluginVL1::loadProgram(uint32_t index)
 
 	for (uint32_t param = 0; param < kNumParams; ++param)
 	{
-		float value = program.GetParameter(param, m_parameterRanges[param].def);
+		float value = program.GetParameter(param, HUGE_VALF);
+		if (value == HUGE_VALF)
+			value = m_parameterRanges[param].def;
+		else
+			value = SharedVL1::ParameterValueFrom01(param, value);
 		setParameterValue(param, value);
 	}
 }

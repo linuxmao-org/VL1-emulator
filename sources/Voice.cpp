@@ -180,9 +180,10 @@ void CVoice::NoteOn(float frequency, float velocity)
 	float sampleRate = m_pShared->sampleRate;
 	int oversampling = m_pShared->oversampling;
 
-	int oct = floorf(2.0f*m_octave);
+	int oct = (int)lroundf(2.0f*m_octave);
 	//float octave = oct==0? 0.5f : oct==1? 1.0f : 2.0f;
-	float octave = oct==0? 1.0f : oct==1? 2.0f : 4.0f;
+	//float octave = oct==0? 1.0f : oct==1? 2.0f : 4.0f;
+	float octave = (float)(1 << oct); // jpc
 	m_phaseInc = m_pWave->GetPitchScale()*m_tune*octave*frequency*((float)m_pWave->GetSize()/(sampleRate*oversampling));
 	m_phase = 0.0f;
 	m_velocity = velocity;

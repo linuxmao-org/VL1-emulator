@@ -1,5 +1,6 @@
 #pragma once
 #include "WaveSet.h"
+#include <stdint.h>
 
 class CClock;
 class CLcdBuffer;
@@ -28,4 +29,5 @@ public:
 	CEventManager *eventManager;
 	tLcdScreenData *screenData;
 	const tParameterRange *parameterRanges;
+	const uint32_t *parameterHints;
 };
