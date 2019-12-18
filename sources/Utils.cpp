@@ -40,3 +40,13 @@ int TRACE(const char *lpszFormat, ...)
 }
 #endif
 #endif
+
+
+void ReplaceCommaWithDot(char *str)
+{
+	for (char c; (c = *str); ++str)
+	{
+		if (c == ',')
+			*str = '.';
+	}
+}

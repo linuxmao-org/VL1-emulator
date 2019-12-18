@@ -68,4 +68,7 @@ inline int FloatToInt(float value, int min, int max)
 }
 
 
+void ReplaceCommaWithDot(char *str);
+
+
 #endif // __UTILS_H__

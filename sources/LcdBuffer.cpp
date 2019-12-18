@@ -359,7 +359,11 @@ bool CLcdBuffer::ShowFloat(double value, bool bError)
 
 	int d = sprintf(str,"%d",iValue);
 	// Use width specifier to simulate bad precision.
-	if (!bInteger) d = sprintf(str,"%*.*f",kLcdLine2Size,kLcdLine2Size-d,value) - 1;
+	if (!bInteger)
+	{
+		d = sprintf(str,"%*.*f",kLcdLine2Size,kLcdLine2Size-d,value) - 1;
+		ReplaceCommaWithDot(str);
+	}
 
 	int dot = -1;
 	int j = kLcdLine2Size - d;

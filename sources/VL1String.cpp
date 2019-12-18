@@ -164,6 +164,7 @@ int CVL1String::SetFromDouble(double d, bool bStripTrailingZeroes, int maxDigits
 	}
 	if (!bRound) maxDigits++;
 	m_index = sprintf(m_str,"% 0*.*f",maxDigits,maxDigits-digits,d);
+	ReplaceCommaWithDot(m_str);
 	if (!bRound) m_str[m_index-1] = '\0';
 	if (bStripTrailingZeroes) StripTrailingZeroes();
 	return Length();
@@ -185,6 +186,7 @@ int CVL1String::SetFromFloat(float d, bool bStripTrailingZeroes, int maxDigits, 
 	}
 	if (!bRound) maxDigits++;
 	m_index = sprintf(m_str,"% 0*.*f",maxDigits,maxDigits-digits,d);
+	ReplaceCommaWithDot(m_str);
 	if (!bRound) m_str[m_index-1] = '\0';
 	if (bStripTrailingZeroes) StripTrailingZeroes();
 	return Length();
