@@ -143,8 +143,8 @@ void UIVL1::parameterChanged(uint32_t index, float value)
 	// jpc: to handle the program button: if the parameter set has its ADSR
 	//      equal to one of the presets, set the button to this position,
 	//      otherwise set it to ADSR.
-	int programSelection = -1;
-	for (unsigned i = 0; i < kNumPrograms && programSelection == -1; ++i)
+	int nProgram = -1;
+	for (unsigned i = 0; i < kNumPrograms && nProgram == -1; ++i)
 	{
 		const CVL1Program &program = SharedVL1::GetFactoryPresets()[i];
 		bool bIsSame = true;
@@ -155,13 +155,18 @@ void UIVL1::parameterChanged(uint32_t index, float value)
 		}
 		if (bIsSame)
 		{
-			programSelection = i;
+			nProgram = i;
 		}
 	}
-	if (programSelection == -1)
-		programSelection = kProgramAdsr;
+	if (nProgram == -1)
+		nProgram = kProgramAdsr;
 	m_pProgramSelector->setValue(
-		programSelection * (1.0 / (kNumPrograms - 1)), CControl::kDoNotNotify);
+		nProgram * (1.0 / (kNumPrograms - 1)), CControl::kDoNotNotify);
+
+	// jpc: set the flag to indicate whether calculator memory will write ADSR
+	PluginVL1 *dsp = getDsp();
+	bool isEditingAdsr = (nProgram == kProgramAdsr);
+	dsp->PerformEditSynchronous([dsp, isEditingAdsr] { dsp->SetEditingAdsr(isEditingAdsr); });
 }
 
 /**
@@ -335,18 +340,25 @@ void UIVL1::controlValueChanged(CControl &control)
 			// if it's the special ADSR program, envelope data is recalled
 			// from the calculator memory.
 
-			CVL1Program program;
+			PluginVL1 *dsp = getDsp();
 			int nProgram = (int)lround(value*(kNumPrograms-1));
 
+			// jpc: set the flag to indicate whether calculator memory will write ADSR
+			bool isEditingAdsr = (nProgram == kProgramAdsr);
+			dsp->PerformEditSynchronous([dsp, isEditingAdsr] { dsp->SetEditingAdsr(isEditingAdsr); });
+
+			CVL1Program program;
 			if (nProgram != kProgramAdsr)
 			{
 				program.LoadPreset("", gVL1Preset[nProgram]);
 			}
 			else
 			{
-				PluginVL1 *dsp = getDsp();
 				tVL1Preset preset;
-				dsp->PerformEditSynchronous([dsp, &preset] { dsp->GetAdsrPreset(preset); });
+				dsp->PerformEditSynchronous([dsp, &preset]
+				{
+					memcpy(&preset, dsp->GetAdsrPreset(), sizeof(tVL1Preset));
+				});
 				program.LoadPreset("", preset);
 			}
 
@@ -370,7 +382,35 @@ void UIVL1::controlValueChanged(CControl &control)
 		case kKeyOneKeyPlayDotDot:
 		{
 			PluginVL1 *dsp = getDsp();
-			dsp->PerformEditSynchronous([dsp, value] { dsp->OnOneKeyPlayDotDot(value); });
+
+			// jpc: M+ can update ADSR memory in Cal+ADSR mode, so send the
+			//      parameter changes accordingly when this happens.
+
+			tVL1Preset preset;
+			bool needUpdateAdsr = false;
+
+			dsp->PerformEditSynchronous([dsp, value, &preset, &needUpdateAdsr]
+			{
+				dsp->OnOneKeyPlayDotDot(value);
+				if (dsp->GetModeI()==kVL1Cal && dsp->IsEditingAdsr())
+				{
+					memcpy(&preset, dsp->GetAdsrPreset(), sizeof(tVL1Preset));
+					needUpdateAdsr = true;
+				}
+			});
+
+			if (needUpdateAdsr)
+			{
+				CVL1Program program;
+				program.LoadPreset("", preset);
+
+				for (unsigned p = 0; p < kNumParams; ++p)
+				{
+					float value = program.GetParameter(p, HUGE_VALF);
+					if (value != HUGE_VALF)
+						setParameterValue(p, value);
+				}
+			}
 		}
 		break;
 

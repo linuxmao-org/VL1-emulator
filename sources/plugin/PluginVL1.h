@@ -88,7 +88,10 @@ public:
 	void OneKeyPlay();
 	void ResetSound();
 
-	void GetAdsrPreset(tVL1Preset &preset);
+	void MemorizeAdsrPresetFromCalculator();
+	const tVL1Preset &GetAdsrPreset() const { return m_adsr; }
+	bool IsEditingAdsr() const { return m_editingAdsr; }
+	void SetEditingAdsr(bool edit) { m_editingAdsr = edit; }
 
 	const tLcdScreenData &GetLcdScreenData() const { return *m_lcdScreenData; }
 	float GetTempoUpDown(bool bUp) const;
@@ -115,14 +118,8 @@ private:
 	float m_tempo = 0;
 	float m_tune = 0;
 
-	float m_sound = 0;
-	float m_attack = 0;
-	float m_decay = 0;
-	float m_sustainLevel = 0;
-	float m_sustainTime = 0;
-	float m_release = 0;
-	float m_vibrato = 0;
-	float m_tremolo = 0;
+	tVL1Preset m_adsr {};
+	bool m_editingAdsr = false;
 
 	int m_modeI = kVL1Off;
 	bool m_bDemoSong = false;

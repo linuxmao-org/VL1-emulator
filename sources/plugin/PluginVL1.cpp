@@ -134,21 +134,21 @@ float PluginVL1::getParameterValue(uint32_t index) const
 		case kTune:
 			return m_tune;
 		case kSound:
-			return m_sound;
+			return m_adsr[0];
 		case kAttack:
-			return m_attack;
+			return m_adsr[1];
 		case kDecay:
-			return m_decay;
+			return m_adsr[2];
 		case kSustainLevel:
-			return m_sustainLevel;
+			return m_adsr[3];
 		case kSustainTime:
-			return m_sustainTime;
+			return m_adsr[4];
 		case kRelease:
-			return m_release;
+			return m_adsr[5];
 		case kVibrato:
-			return m_vibrato;
+			return m_adsr[6];
 		case kTremolo:
-			return m_tremolo;
+			return m_adsr[7];
 		case kTempo:
 			return m_tempo;
 		default:
@@ -182,28 +182,28 @@ void PluginVL1::setParameterValue(uint32_t index, float value)
 			m_tune = value;
 			break;
 		case kSound:
-			m_sound = value;
+			m_adsr[0] = value;
 			break;
 		case kAttack:
-			m_attack = value;
+			m_adsr[1] = value;
 			break;
 		case kDecay:
-			m_decay = value;
+			m_adsr[2] = value;
 			break;
 		case kSustainLevel:
-			m_sustainLevel = value;
+			m_adsr[3] = value;
 			break;
 		case kSustainTime:
-			m_sustainTime = value;
+			m_adsr[4] = value;
 			break;
 		case kRelease:
-			m_release = value;
+			m_adsr[5] = value;
 			break;
 		case kVibrato:
-			m_vibrato = value;
+			m_adsr[6] = value;
 			break;
 		case kTremolo:
-			m_tremolo = value;
+			m_adsr[7] = value;
 			break;
 		case kTempo:
 			m_tempo = value;
@@ -547,6 +547,10 @@ void PluginVL1::OnOneKeyPlayDotDot(float value)
 	else if (m_modeI==kVL1Cal && value>0.0f)
 	{
 		Calculator(kKeyOneKeyPlayDotDot);
+		if (m_editingAdsr)
+		{
+			MemorizeAdsrPresetFromCalculator();
+		}
 	}
 }
 
@@ -671,9 +675,9 @@ void PluginVL1::ResetSound()
 }
 
 
-void PluginVL1::GetAdsrPreset(tVL1Preset &preset)
+void PluginVL1::MemorizeAdsrPresetFromCalculator()
 {
-	memcpy(preset, gVL1Preset[kProgramAdsr], sizeof(tVL1Preset));
+	memcpy(m_adsr, gVL1Preset[kProgramAdsr], sizeof(tVL1Preset));
 
 	if (m_calculator->GetM())
 	{
@@ -685,7 +689,7 @@ void PluginVL1::GetAdsrPreset(tVL1Preset &preset)
 			char ch = str.GetAt(i);
 			if (ch<'0' || ch>'9') break;
 			//adsr[j+10] = 0.01f*(float)ch;
-			preset[j] = 0.1f*(ch-'0');
+			m_adsr[j] = 0.1f*(ch-'0');
 		}
 	}
 }
