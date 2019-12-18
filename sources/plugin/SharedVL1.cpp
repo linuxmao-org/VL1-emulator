@@ -33,12 +33,12 @@ void SharedVL1::InitAudioPort(bool input, uint32_t index, AudioPort &port)
 		switch (index)
 		{
 			case 0:
-				port.symbol = "Melody";
-				port.name = "Melody";
+				port.symbol = "Left";
+				port.name = "Left";
 				break;
 			case 1:
-				port.symbol = "Rhythm";
-				port.name = "Rhythm";
+				port.symbol = "Right";
+				port.name = "Right";
 				break;
 			default:
 				DISTRHO_SAFE_ASSERT(false);
@@ -54,6 +54,12 @@ void SharedVL1::InitParameter(uint32_t index, Parameter &parameter)
 	parameter.ranges = ParameterRanges(0.0, 0.0, 1.0);
 	parameter.hints = kParameterIsAutomable;
 
+	const CVL1Program &program = SharedVL1::GetFactoryPresets()[0];
+	float valueFromProgram = program.GetParameter(index, HUGE_VALF);
+
+	if (valueFromProgram != HUGE_VALF)
+		parameter.ranges.def = valueFromProgram;
+
 	switch (index)
 	{
 		case kProgram:
@@ -63,7 +69,7 @@ void SharedVL1::InitParameter(uint32_t index, Parameter &parameter)
 		case kMode:
 			parameter.symbol = "Mode";
 			parameter.name = "Mode";
-			parameter.ranges.def = 1.0; // off
+			parameter.ranges.def = 0.0; // play
 			break;
 		case kVolume:
 			parameter.symbol = "Volume";
@@ -125,4 +131,6 @@ void SharedVL1::InitParameter(uint32_t index, Parameter &parameter)
 		default:
 			DISTRHO_SAFE_ASSERT_RETURN(false, );
 	}
+
+	//fprintf(stderr, "Parameter \"%s\" default %f\n", parameter.name.buffer(), parameter.ranges.def);
 }

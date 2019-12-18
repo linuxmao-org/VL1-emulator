@@ -5,7 +5,10 @@
 #include "SharedVL1.h"
 #include "Filters.h"
 #include "SharedData.h"
+#include <functional>
 #include <memory>
+#include <atomic>
+#include <mutex>
 
 // -----------------------------------------------------------------------
 
@@ -51,6 +54,7 @@ protected:
 	// Process
 
 	void activate() override;
+	void deactivate() override;
 
 	void run(const float **, float **outputs, uint32_t frames, const MidiEvent *midiEvents,
 	         uint32_t midiEventCount) override;
@@ -58,12 +62,34 @@ protected:
 	// -------------------------------------------------------------------
 
 public:
-	inline int GetModeI() { return m_modeI; }
+	int GetModeI() { return m_modeI; }
+	bool IsPlayingDemoSong() const { return m_bDemoSong; }
+
+	CSequencer *GetSequencer() const { return m_sequencer.get(); }
+
+	void HandleKey(int key, float value);
+	void SendKey(int noteOnOff, int note, int velocity);
 
 	void Reset();
 	void OnMode(int mode);
+	void OnReset();
+	void OnDel();
+	void OnRhythm(float value);
+	void OnMusic();
+	void OnAutoPlay();
+	void OnOneKeyPlayDotDot(float value);
+	void OnOneKeyPlayDot(float value);
+
+	void Calculator(int key);
+	void AutoPlay();
+	void OneKeyPlay();
+	void ResetSound();
 
 	const tLcdScreenData &GetLcdScreenData() const { return *m_lcdScreenData; }
+	float GetTempoUpDown(bool bUp) const;
+
+	typedef std::function<void()> tSynchronousCallback;
+	void PerformEditSynchronous(const tSynchronousCallback &fn);
 
 private:
 	CSharedData m_sharedData;
@@ -78,8 +104,20 @@ private:
 	std::unique_ptr<CVoiceManager> m_voices1;
 	std::unique_ptr<CClock> m_clock;
 
+	float m_octave = 0;
 	float m_balance = 0;
 	float m_volume = 0;
+	float m_tempo = 0;
+	float m_tune = 0;
+
+	float m_sound = 0;
+	float m_attack = 0;
+	float m_decay = 0;
+	float m_sustainLevel = 0;
+	float m_sustainTime = 0;
+	float m_release = 0;
+	float m_vibrato = 0;
+	float m_tremolo = 0;
 
 	int m_modeI = kVL1Off;
 	bool m_bDemoSong = false;
@@ -90,6 +128,11 @@ private:
 	CIIR1 m_lp2;
 
 	std::unique_ptr<ParameterRanges[]> m_parameterRanges;
+
+	bool fIsActive = false;
+	std::mutex fRunMutex;
+
+	std::atomic<const tSynchronousCallback *> fSynchronousCallback{};
 
 	DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluginVL1)
 };

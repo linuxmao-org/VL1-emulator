@@ -6,9 +6,15 @@
 #include "EventManager.h"
 #include "VoiceManager.h"
 #include "Clock.h"
+#include "DemoSong.h"
+#include "MidiDefs.h"
 #include "VL1Program.h"
+#include <chrono>
+#include <thread>
 #include <string.h>
 #include <math.h>
+#include <assert.h>
+namespace cro = std::chrono;
 
 // -----------------------------------------------------------------------
 
@@ -115,12 +121,36 @@ float PluginVL1::getParameterValue(uint32_t index) const
 
 	switch (index)
 	{
+		// case kProgram:
+		// 	return;
+		case kMode:
+			return m_modeI/3.0f;
 		case kVolume:
 			return m_volume;
 		case kBalance:
 			return m_balance;
-		case kMode:
-			return m_modeI/3.0f;
+		case kOctave:
+			return m_octave;
+		case kTune:
+			return m_tune;
+		case kSound:
+			return m_sound;
+		case kAttack:
+			return m_attack;
+		case kDecay:
+			return m_decay;
+		case kSustainLevel:
+			return m_sustainLevel;
+		case kSustainTime:
+			return m_sustainTime;
+		case kRelease:
+			return m_release;
+		case kVibrato:
+			return m_vibrato;
+		case kTremolo:
+			return m_tremolo;
+		case kTempo:
+			return m_tempo;
 		default:
 			DISTRHO_SAFE_ASSERT_RETURN(false, 0);
 	}
@@ -135,19 +165,58 @@ void PluginVL1::setParameterValue(uint32_t index, float value)
 
 	switch (index)
 	{
+		// case kProgram:
+		// 	break;
+		case kMode:
+			OnMode((int)lroundf(3.0f*value));
+			break;
 		case kVolume:
 			m_volume = value;
 			break;
 		case kBalance:
 			m_balance = value;
 			break;
-		case kMode:
-			OnMode((int)lroundf(3.0f*value));
+		case kOctave:
+			m_octave = value;
+			break;
+		case kTune:
+			m_tune = value;
+			break;
+		case kSound:
+			m_sound = value;
+			break;
+		case kAttack:
+			m_attack = value;
+			break;
+		case kDecay:
+			m_decay = value;
+			break;
+		case kSustainLevel:
+			m_sustainLevel = value;
+			break;
+		case kSustainTime:
+			m_sustainTime = value;
+			break;
+		case kRelease:
+			m_release = value;
+			break;
+		case kVibrato:
+			m_vibrato = value;
+			break;
+		case kTremolo:
+			m_tremolo = value;
+			break;
+		case kTempo:
+			m_tempo = value;
+			m_clock->SetTempo((int)floorf(18.0f*m_tempo)-9);
+			m_lcdBuffer->SetTempo(m_clock->GetTempo());
 			break;
 		default:
 			DISTRHO_SAFE_ASSERT(false);
 			break;
 	}
+
+	m_voices1->SetParameter(index, value);
 }
 
 /**
@@ -173,12 +242,22 @@ void PluginVL1::loadProgram(uint32_t index)
 
 void PluginVL1::activate()
 {
-	// plugin is activated
+	Reset();
+	fIsActive = true;
+}
+
+void PluginVL1::deactivate()
+{
+	fIsActive = false;
 }
 
 void PluginVL1::run(const float **inputs, float **outputs, uint32_t frames, const MidiEvent *midiEvents,
                     uint32_t midiEventCount)
 {
+	(void)inputs;
+
+	std::unique_lock<std::mutex> runLock(fRunMutex, std::defer_lock);
+
 	float* pOut1 = outputs[0];
 	float* pOut2 = outputs[1];
 
@@ -186,7 +265,11 @@ void PluginVL1::run(const float **inputs, float **outputs, uint32_t frames, cons
 	uint32_t midiInterval = 64;
 
 	int mode = GetModeI();
-	if ((mode==kVL1Off) || (mode==kVL1Cal))
+
+	if (const tSynchronousCallback *sc = fSynchronousCallback.exchange(nullptr))
+		(*sc)();
+
+	if ((mode==kVL1Off) || (mode==kVL1Cal) || !runLock.try_lock())
 	{
 		memset(pOut1,0,sizeof(float)*frames);
 		memset(pOut2,0,sizeof(float)*frames);
@@ -244,6 +327,61 @@ void PluginVL1::run(const float **inputs, float **outputs, uint32_t frames, cons
 
 // -----------------------------------------------------------------------
 
+
+void PluginVL1::HandleKey(int key, float value)
+{
+	//ResetAutoPowerOffWatchdog();
+
+	if (m_sequencer->IsPlaying() && ((!m_sequencer->IsPaused()) || m_bDemoSong)) return;
+
+	if (m_modeI==kVL1Play || m_modeI==kVL1Rec)
+	{
+		if (key>=kKeyPlusMin && key<=kKeyEqual)
+		{
+			// Black and white keys only.
+			float velocity = 127.0f*value;
+			int noteOnOff = velocity>0.0f? kNoteOn : kNoteOff;
+			//int note = key - kKeyPlusMin + 55; // 55 = G below middle C.
+			SendKey(noteOnOff,key,(int)velocity);
+		}
+	}
+	else if (m_modeI==kVL1Cal)
+	{
+		// Key down only.
+		if (value) Calculator(key);
+	}
+}
+
+
+void PluginVL1::SendKey(int noteOnOff, int note, int velocity)
+{
+	if (m_modeI==kVL1Rec)
+	{
+		if (m_sequencer->IsDirty())
+		{
+			if (noteOnOff==kNoteOn)
+			{
+				// TODO: LongHighBeep();
+			}
+		}
+		// Store key when in REC mode.
+		tSequencerEvent seqEvent;
+		memset(&seqEvent,0,sizeof(seqEvent));
+		seqEvent.midi[0] = (unsigned char)noteOnOff;
+		seqEvent.midi[1] = (unsigned char)note;
+		seqEvent.midi[2] = (unsigned char)velocity;
+		m_sequencer->AddEvent(seqEvent);
+	}
+
+	tEvent event;
+	memset(&event,0,sizeof(event));
+	event.midiEvent.midiData[0] = (char)noteOnOff;
+	event.midiEvent.midiData[1] = (char)note;
+	event.midiEvent.midiData[2] = (char)velocity;
+	m_eventManager->SendEvent(event);
+}
+
+
 void PluginVL1::Reset()
 {
 	m_bDemoSong = false;
@@ -255,7 +393,12 @@ void PluginVL1::Reset()
 	m_clock->Reset();
 	m_calculator->Clear(true,false);
 	m_lcdBuffer->SetMode(m_modeI);
+
+	// jpc: cannot do this in LV2
+	//LoadAdsrPreset();
+	//setProgram(curProgram);
 }
+
 
 void PluginVL1::OnMode(int mode)
 {
@@ -280,6 +423,317 @@ void PluginVL1::OnMode(int mode)
 	}
 
 	Reset();
+}
+
+
+void PluginVL1::OnReset()
+{
+	if (m_modeI==kVL1Play || m_modeI==kVL1Rec)
+	{
+		Reset();
+		if (m_modeI==kVL1Rec && m_sequencer->IsDirty())
+		{
+			m_sequencer->SetRecording(false);
+		}
+	}
+	else if (m_modeI==kVL1Cal)
+	{
+		Calculator(kKeyReset);
+	}
+}
+
+
+void PluginVL1::OnDel()
+{
+	if (m_modeI==kVL1Rec)
+	{
+		if ((!m_sequencer->IsPlaying() || m_sequencer->IsPaused()) && !m_sequencer->IsEmpty())
+		{
+			if (m_sequencer->IsRecording())
+			{
+				// TODO: handle delete while recording.
+				// The next note after a delete should get the deleted note's start time.
+			}
+			// TODO: LongHighBeep();
+			// One note is two events.
+			m_sequencer->RemoveEvents(2);
+			// Scroll the LCD one note to the right.
+			int note = 0;
+			int i = m_sequencer->GetSongPointer();
+			if (i==0)
+			{
+				// Show tempo if all notes before the song pointer were deleted.
+				m_lcdBuffer->SetTempo(m_clock->GetTempo());
+			}
+			else if (i>0)
+			{
+				// The song pointer points to the next event.
+				// Skip two notes (a note is two events).
+				tSequencerEvent event = m_sequencer->GetEvent(i-5);
+				note = event.midi[1]&0x7f;
+				m_lcdBuffer->ScrollRight(note);
+			}
+		}
+	}
+	else if (m_modeI==kVL1Cal)
+	{
+		Calculator(kKeyDel);
+	}
+}
+
+
+void PluginVL1::OnRhythm(float value)
+{
+	if (m_modeI==kVL1Play || m_modeI==kVL1Rec)
+	{
+		int rhythm = kBeguine;
+
+		if (value<0.1) rhythm = kMarch;
+		else if (value<0.2) rhythm = kWaltz;
+		else if (value<0.3) rhythm = k4Beat;
+		else if (value<0.4) rhythm = kSwing;
+		else if (value<0.5) rhythm = kRock1;
+		else if (value<0.6) rhythm = kRock2;
+		else if (value<0.7) rhythm = kBossanova;
+		else if (value<0.8) rhythm = kSamba;
+		else if (value<0.9) rhythm = kRhumba;
+
+		m_rhythm->SelectRhythm(rhythm);
+		m_rhythm->Play();
+	}
+}
+
+
+void PluginVL1::OnMusic()
+{
+	if (m_modeI==kVL1Play || m_modeI==kVL1Rec)
+	{
+		Reset();
+
+		// jpc: tempo set in editor after pushing the button
+		//setParameter(kTempo,0.725f); // tempo = 4
+
+		m_sequencer->LoadSong((tSequencerEvent*)gDemoSongData);
+		m_bDemoSong = true;
+		m_sequencer->Play();
+	}
+	else if (m_modeI==kVL1Cal)
+	{
+		Calculator(kKeyMusic);
+	}
+}
+
+void PluginVL1::OnAutoPlay()
+{
+	if (m_modeI==kVL1Play || m_modeI==kVL1Rec)
+	{
+		AutoPlay();
+	}
+	else if (m_modeI==kVL1Cal)
+	{
+		Calculator(kKeyAutoPlay);
+	}
+}
+
+
+void PluginVL1::OnOneKeyPlayDotDot(float value)
+{
+	if (m_modeI==kVL1Play || m_modeI==kVL1Rec)
+	{
+		OneKeyPlay();
+	}
+	else if (m_modeI==kVL1Cal && value>0.0f)
+	{
+		Calculator(kKeyOneKeyPlayDotDot);
+	}
+}
+
+
+void PluginVL1::OnOneKeyPlayDot(float value)
+{
+	(void)value;
+
+	if (m_modeI==kVL1Play || m_modeI==kVL1Rec)
+	{
+		OneKeyPlay();
+	}
+}
+
+
+void PluginVL1::Calculator(int key)
+{
+	CVL1String result = m_calculator->Input(key);
+	m_lcdBuffer->ShowString(result,m_calculator->GetOperator(),m_calculator->GetError(),m_calculator->GetM(),m_calculator->GetK());
+}
+
+
+void PluginVL1::AutoPlay()
+{
+	m_voices1->Reset();
+
+	if (m_sequencer->IsDirty() && m_sequencer->IsRecording())
+	{
+		// Pressed auto-play while recording.
+		m_sequencer->SetRecording(false);
+	}
+
+	if (m_sequencer->IsPlaying() && m_bDemoSong)
+	{
+		Reset(); // Stop immediately.
+		m_sequencer->LoadSong();
+		//setParameter(kProgram,m_program);
+	}
+
+	if (!m_sequencer->IsPlaying())
+	{
+		// Not playing -> start song.
+		m_lcdBuffer->Clear();
+		m_sequencer->Rewind();
+		m_sequencer->Play();
+	}
+	else if (!m_sequencer->IsPaused())
+	{
+		// Playing and not paused -> pause.
+		m_sequencer->Pause(true);
+		//m_sequencer->GotoEvent(kNoteOn);
+	}
+	else
+	{
+		// Playing but paused -> continue playing.
+		m_sequencer->GotoEvent(kNoteOn);
+		if (m_bOneKeyPlay)
+		{
+			m_bOneKeyPlay = false;
+		}
+		m_sequencer->Pause(false);
+	}
+}
+
+
+void PluginVL1::OneKeyPlay()
+{
+	if (m_sequencer->IsPlaying() && m_bDemoSong) return;
+
+	if (m_bIgnoreNextEvent)
+	{
+		// Ignore key up at end of song.
+		m_bIgnoreNextEvent = false;
+		return;
+	}
+
+	if (m_sequencer->IsRecording())
+	{
+		// Pressing an OKP key while recording will stop the
+		// rhythm, the sound and display the tempo, much like a reset.
+		m_bIgnoreNextEvent = true;
+		ResetSound();
+		if (m_sequencer->IsDirty())
+		{
+			m_sequencer->SetRecording(false);
+		}
+		return;
+	}
+
+	if (!m_sequencer->IsPlaying())
+	{
+		// One key play keys only do something when the sequencer
+		// is not playing or paused.
+		m_bDemoSong = false;
+		m_sequencer->LoadSong();
+		m_sequencer->SetPause(true);
+		m_sequencer->Play();
+	}
+
+	if (m_sequencer->IsPaused())
+	{
+		// If the sequencer is paused pressing an OKP key will advance
+		// the song one position.
+		if (!m_sequencer->Step(m_modeI==kVL1Rec))
+		{
+			// End of song.
+			// When there are no more events pressing an OKP key will stop
+			// the rhythm, the sound and display the tempo, much like a reset.
+			m_bIgnoreNextEvent = true;
+			ResetSound();
+		}
+		else m_bOneKeyPlay = true;
+	}
+}
+
+
+void PluginVL1::ResetSound()
+{
+	m_voices1->Reset();
+	m_rhythm->Stop();
+	m_lcdBuffer->SetTempo(m_clock->GetTempo());
+}
+
+
+float PluginVL1::GetTempoUpDown(bool bUp) const
+{
+	float fTempo = (m_clock->GetTempo()+9)/18.0f;
+	float delta = bUp? 1.0f/18.0f : -1.0f/18.0f;
+	delta += 0.001f; // make sure to be in an interval.
+	fTempo += delta;
+	return Clipf(0.0f,fTempo,1.0f);
+}
+
+
+/*
+  jpc: HACK
+
+  The purpose of this editor-side function is to "run this code in the DSP".
+  If DSP is not running, Editor will take a lock and run it itself.
+
+  It needs the instance-access for this.
+
+  It's so I don't have to modify program flow too deeply while I port it,
+  introducing potential problems...
+
+  // note:
+  //   Original does a weird thing where control buttons are received by DSP as
+  //   VST parameters coming from the editor. As VST is concerned, this works
+  //   apparently, but it needs a replacement solution in the port.
+
+  // typical stuff:
+  // - set a parameter (DSP side, must go to Editor)
+  // - write a string on LCD (DSP side)
+  // - perform sequencer action (DSP side)
+  // - ...
+*/
+void PluginVL1::PerformEditSynchronous(const tSynchronousCallback &fn)
+{
+	bool performed = false;
+
+	if (fIsActive)
+	{
+		const tSynchronousCallback *old = fSynchronousCallback.exchange(&fn);
+		assert(!old);
+		(void)old;
+
+		cro::steady_clock::time_point tStart = cro::steady_clock::now();
+		enum { timeoutMs = 100 };
+
+		while (!(performed = (fSynchronousCallback.load() == nullptr)))
+		{
+			auto elapsed = cro::steady_clock::now() - tStart;
+			if (cro::duration_cast<cro::milliseconds>(elapsed).count() >= timeoutMs)
+				break;
+			std::this_thread::sleep_for(cro::milliseconds(5));
+		}
+
+		if (!performed)
+		{
+			const tSynchronousCallback *expected = &fn;
+			performed = !fSynchronousCallback.compare_exchange_weak(expected, nullptr);
+		}
+	}
+
+	if (!performed)
+	{
+		std::lock_guard<std::mutex> lock(fRunMutex);
+		fn();
+	}
 }
 
 // -----------------------------------------------------------------------

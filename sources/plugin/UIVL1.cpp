@@ -2,6 +2,7 @@
 #include "UIVL1Defs.h"
 #include "PluginVL1.h"
 #include "Window.hpp"
+#include "Sequencer.h"
 #include "VL1Program.h"
 #include "resource.h"
 #include "ui/BitmapCache.h"
@@ -96,6 +97,12 @@ UIVL1::~UIVL1()
 {
 }
 
+PluginVL1 *UIVL1::getDsp() const
+{
+	return static_cast<PluginVL1 *>(
+		reinterpret_cast<Plugin *>(getPluginInstancePointer()));
+}
+
 // -----------------------------------------------------------------------
 // DSP/Plugin callbacks
 
@@ -144,6 +151,8 @@ void UIVL1::programLoaded(uint32_t index)
 {
 	DISTRHO_SAFE_ASSERT_RETURN(index < kNumPrograms, );
 
+	m_curProgram = index;
+
 	const CVL1Program &program = SharedVL1::GetFactoryPresets()[index];
 
 	for (uint32_t i = 0; i < kNumParams; i++)
@@ -171,7 +180,7 @@ void UIVL1::sampleRateChanged(double newSampleRate)
 */
 void UIVL1::uiIdle()
 {
-	PluginVL1 *dsp = static_cast<PluginVL1 *>((Plugin *)getPluginInstancePointer());
+	PluginVL1 *dsp = getDsp();
 
 	m_lcd->Show(dsp->GetLcdScreenData());
 }
@@ -251,6 +260,46 @@ bool UIVL1::onScroll(const ScrollEvent &ev)
 
 // -----------------------------------------------------------------------
 
+static float KeyToRhythm(int key)
+{
+	switch (key)
+	{
+		case kKey0: // B4 or 0
+			return 0.0f;
+
+		case kKey1: // C5 or 1
+			return 0.1f;
+
+		case kKey2: // D5 or 2
+			return 0.2f;
+
+		case kKey3: // E5 or 3
+			return 0.3f;
+
+		case kKey4: // F5 or 4
+			return 0.4f;
+
+		case kKey5: // G5 or 5
+			return 0.5f;
+
+		case kKey6: // A5 or 6
+			return 0.6f;
+
+		case kKey7: // B5 or 7
+			return 0.7f;
+
+		case kKey8: // C6 or 8
+			return 0.8f;
+
+		case kKey9: // D6 or 9
+			return 0.9f;
+	}
+
+	return -1.0f;
+}
+
+// -----------------------------------------------------------------------
+
 void UIVL1::controlValueChanged(CControl &control)
 {
 	long tag = control.getTag();
@@ -258,8 +307,6 @@ void UIVL1::controlValueChanged(CControl &control)
 
 	switch (tag)
 	{
-#pragma message("TODO the rest of the controls")
-
 		case kTune: // Control not yet implemented.
 		case kMode:
 		case kProgram:
@@ -269,23 +316,109 @@ void UIVL1::controlValueChanged(CControl &control)
 			setParameterValue(tag,value);
 			break;
 
-		// case kKeyOneKeyPlayDotDot:
-		// case kKeyOneKeyPlayDot:
-		// 	effect->setParameterAutomated(tag,value);
-		// 	break;
+		case kKeyOneKeyPlayDotDot:
+		{
+			PluginVL1 *dsp = getDsp();
+			dsp->PerformEditSynchronous([dsp, value] { dsp->OnOneKeyPlayDotDot(value); });
+		}
+		break;
 
-		// case kKeyReset:
-		// case kKeyDel:
-		// case kKeyTempoUp:
-		// case kKeyTempoDown:
-		// case kKeyMLC:
-		// case kKeyMusic:
-		// case kKeyAutoPlay:
-		// 	// Key down only.
-		// 	if (value!=0) effect->setParameterAutomated(tag,value);
-		// 	break;
+		case kKeyOneKeyPlayDot:
+		{
+			PluginVL1 *dsp = getDsp();
+			dsp->PerformEditSynchronous([dsp, value] { dsp->OnOneKeyPlayDot(value); });
+		}
+		break;
+
+		case kKeyTempoUp:
+		case kKeyTempoDown:
+			// Key down only.
+			if (value!=0)
+			{
+				PluginVL1 *dsp = getDsp();
+				int mode = dsp->GetModeI();
+
+				// jpc: tempo parameter must be changed from Editor
+				if (mode==kVL1Play || mode==kVL1Rec)
+				{
+					setParameterValue(kTempo, dsp->GetTempoUpDown(tag == kKeyTempoUp));
+				}
+				else if (mode==kVL1Cal)
+				{
+					dsp->PerformEditSynchronous([dsp, tag] { dsp->Calculator(tag); });
+				}
+			}
+			break;
+
+		case kKeyReset:
+			// Key down only.
+			if (value!=0)
+			{
+				PluginVL1 *dsp = getDsp();
+				dsp->PerformEditSynchronous([dsp] { dsp->OnReset(); });
+			}
+			break;
+
+		case kKeyDel:
+			// Key down only.
+			if (value!=0)
+			{
+				PluginVL1 *dsp = getDsp();
+				dsp->PerformEditSynchronous([dsp] { dsp->OnDel(); });
+			}
+			break;
+
+		case kKeyMLC:
+			// Key down only.
+			if (value!=0)
+			{
+				PluginVL1 *dsp = getDsp();
+				int mode = dsp->GetModeI();
+
+				// jpc: tempo parameter must be changed from Editor
+				if (mode==kVL1Rec)
+				{
+					if (!dsp->IsPlayingDemoSong())
+					{
+						setParameterValue(kTempo,0.5f); // tempo = 0
+
+						dsp->PerformEditSynchronous([dsp]
+						{
+							dsp->Reset();
+							dsp->GetSequencer()->Clear();
+						});
+					}
+				}
+				else if (mode==kVL1Cal)
+				{
+					dsp->PerformEditSynchronous([dsp] { dsp->Calculator(kKeyMLC); });
+				}
+			}
+			break;
+
+		case kKeyMusic:
+			// Key down only.
+			if (value!=0)
+			{
+				// jpc: need to this change this parameter from Editor
+				setParameterValue(kTempo,0.725f); // tempo = 4
+
+				PluginVL1 *dsp = getDsp();
+				dsp->PerformEditSynchronous([dsp] { dsp->OnMusic(); });
+			}
+			break;
+
+		case kKeyAutoPlay:
+			// Key down only.
+			if (value!=0)
+			{
+				PluginVL1 *dsp = getDsp();
+				dsp->PerformEditSynchronous([dsp] { dsp->OnAutoPlay(); });
+			}
+			break;
 
 		case kKeyRhythm:
+			// Key down only.
 			if (value!=0)
 			{
 				// Key down only.
@@ -297,24 +430,28 @@ void UIVL1::controlValueChanged(CControl &control)
 			}
 			break;
 
-		// default:
-		// 	if (tag>=kKeyPlusMin && tag<=kKeyEqual)
-		// 	{
-		// 		// Black and white keys only.
-		// 		if (m_bSelectRhythm)
-		// 		{
-		// 			// Key down only.
-		// 			if (value!=0)
-		// 			{
-		// 				// Two key sequence, step two.
-		// 				m_bSelectRhythm = FALSE;
-		// 				value = KeyToRhythm(tag);
-		// 				if (value>=0) effect->setParameterAutomated(kKeyRhythm,value);
-		// 			}
-		// 		}
-		// 		// Key up and down.
-		// 		else ((CVL1*)effect)->HandleKey(tag,value);
-		// 	}
+		default:
+			if (tag>=kKeyPlusMin && tag<=kKeyEqual)
+			{
+				PluginVL1 *dsp = getDsp();
+
+				// Black and white keys only.
+				if (m_bSelectRhythm)
+				{
+					// Key down only.
+					if (value!=0)
+					{
+						// Two key sequence, step two.
+						m_bSelectRhythm = false;
+						value = KeyToRhythm(tag);
+						if (value>=0)
+							dsp->PerformEditSynchronous([dsp, value] { dsp->OnRhythm(value); });
+					}
+				}
+				// Key up and down.
+				else
+					dsp->PerformEditSynchronous([dsp, tag, value] { dsp->HandleKey(tag, value); });
+			}
 	}
 }
 

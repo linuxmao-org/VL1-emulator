@@ -11,12 +11,15 @@ class KickButton;
 class MultiSwitch;
 class Slider;
 class CLcd;
+class PluginVL1;
 
 class UIVL1 : public UI, public CControlListener
 {
 public:
 	UIVL1();
 	~UIVL1();
+
+	PluginVL1 *getDsp() const;
 
 protected:
 	void parameterChanged(uint32_t, float value) override;
@@ -66,6 +69,8 @@ private:
 	CLcd *m_lcd;
 
 	bool m_bSelectRhythm = false;
+
+	int m_curProgram = 0;
 
 	std::list<std::unique_ptr<Widget>> m_subWidgets;
 
