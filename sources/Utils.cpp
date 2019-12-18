@@ -3,6 +3,7 @@
 #include <stdarg.h>
 
 
+#ifndef NDEBUG
 #ifdef _WIN32
 #include <windows.h>
 int TRACE(const char *lpszFormat, ...)
@@ -37,4 +38,5 @@ int TRACE(const char *lpszFormat, ...)
 
 	return nBuf;
 }
+#endif
 #endif

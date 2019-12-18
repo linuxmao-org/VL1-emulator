@@ -5,7 +5,11 @@
 //#include "VstGui.h"
 
 
+#ifndef NDEBUG
 int TRACE(const char *lpszFormat, ...);
+#else
+inline int TRACE(const char *, ...) { return 0; }
+#endif
 
 
 template <class T>
