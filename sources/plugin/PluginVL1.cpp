@@ -266,7 +266,10 @@ void PluginVL1::run(const float **inputs, float **outputs, uint32_t frames, cons
 	int mode = GetModeI();
 
 	if (const tSynchronousCallback *sc = fSynchronousCallback.exchange(nullptr))
+	{
 		(*sc)();
+		fSynchronousCompletion.store(true);
+	}
 
 	if ((mode==kVL1Off) || (mode==kVL1Cal) || !runLock.try_lock())
 	{
@@ -727,13 +730,13 @@ void PluginVL1::PerformEditSynchronous(const tSynchronousCallback &fn)
 
 	if (fIsActive)
 	{
-		const tSynchronousCallback *old = fSynchronousCallback.exchange(&fn);
-		assert(!old);
-		(void)old;
+		fSynchronousCompletion.store(false);
+		fSynchronousCallback.store(&fn);
 
 		cro::steady_clock::time_point tStart = cro::steady_clock::now();
 		enum { timeoutMs = 100 };
 
+		// repeatedly check for the DSP to pick up the callback until timeout
 		while (!(performed = (fSynchronousCallback.load() == nullptr)))
 		{
 			auto elapsed = cro::steady_clock::now() - tStart;
@@ -741,11 +744,19 @@ void PluginVL1::PerformEditSynchronous(const tSynchronousCallback &fn)
 				break;
 			std::this_thread::sleep_for(cro::milliseconds(5));
 		}
-
+		// if it didn't pick up, cancel, but make sure to do a final check with
+		// compare-and-swap to avoid a possibility of race condition
 		if (!performed)
 		{
 			const tSynchronousCallback *expected = &fn;
 			performed = !fSynchronousCallback.compare_exchange_weak(expected, nullptr);
+		}
+
+		// if it was picked up, wait for completion
+		if (performed)
+		{
+			while (!fSynchronousCompletion.load())
+				std::this_thread::sleep_for(cro::milliseconds(5));
 		}
 	}
 

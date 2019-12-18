@@ -138,6 +138,7 @@ private:
 	std::mutex fRunMutex;
 
 	std::atomic<const tSynchronousCallback *> fSynchronousCallback{};
+	std::atomic<bool> fSynchronousCompletion{};
 
 	DISTRHO_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PluginVL1)
 };
