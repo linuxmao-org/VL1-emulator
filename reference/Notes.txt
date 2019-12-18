@@ -8,4 +8,4 @@ The files which are (C) Steinberg Media Technologies have been
 removed, as they are not freely distributable.
 These are part of the VST 2.x developer kit.
 
-License: to be decided (potentially CC0)
+License: CC0-1.0 or MIT
