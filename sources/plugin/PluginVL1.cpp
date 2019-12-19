@@ -36,21 +36,8 @@ PluginVL1::PluginVL1()
 	  m_rhythm(new CRhythm),
 	  m_eventManager(new CEventManager),
 	  m_voices1(new CVoiceManager),
-	  m_clock(new CClock),
-	  m_parameterRanges(new tParameterRange[kNumParams]),
-	  m_parameterHints(new uint32_t[kNumParams])
+	  m_clock(new CClock)
 {
-	for (uint32_t p=0; p<kNumParams; ++p)
-	{
-		Parameter parameter;
-		SharedVL1::InitParameter(p, parameter);
-		tParameterRange &range = m_parameterRanges[p];
-		range.def = parameter.ranges.def;
-		range.min = parameter.ranges.min;
-		range.max = parameter.ranges.max;
-		m_parameterHints[p] = parameter.hints;
-	}
-
 	m_sharedData.sampleRate = kDefaultSampleRate;
 	m_sharedData.oversampling = kDefaultOversampling;
 	m_sharedData.clock = m_clock.get();
@@ -62,8 +49,6 @@ PluginVL1::PluginVL1()
 	m_sharedData.calculator = m_calculator.get();
 	m_sharedData.eventManager = m_eventManager.get();
 	m_sharedData.screenData = m_lcdScreenData.get();
-	m_sharedData.parameterRanges = m_parameterRanges.get();
-	m_sharedData.parameterHints = m_parameterHints.get();
 
 	memset(m_lcdScreenData.get(), 0, sizeof(tLcdScreenData));
 
@@ -73,7 +58,7 @@ PluginVL1::PluginVL1()
 
 	for (uint32_t p=0; p<kNumParams; ++p)
 	{
-		setParameterValue(p, m_parameterRanges[p].def);
+		setParameterValue(p, SharedVL1::GetParameterRange(p).def);
 	}
 }
 
@@ -263,7 +248,7 @@ void PluginVL1::loadProgram(uint32_t index)
 	{
 		float value = program.GetParameter(param, HUGE_VALF);
 		if (value == HUGE_VALF)
-			value = m_parameterRanges[param].def;
+			value = SharedVL1::GetParameterRange(param).def;
 		else
 			value = SharedVL1::ParameterValueFrom01(param, value);
 		setParameterValue(param, value);

@@ -137,9 +137,6 @@ private:
 	CIIR1 m_lp1;
 	CIIR1 m_lp2;
 
-	std::unique_ptr<tParameterRange[]> m_parameterRanges;
-	std::unique_ptr<uint32_t[]> m_parameterHints;
-
 	bool fIsActive = false;
 	std::mutex fRunMutex;
 

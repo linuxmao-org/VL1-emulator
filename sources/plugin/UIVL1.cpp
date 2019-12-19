@@ -181,14 +181,13 @@ void UIVL1::programLoaded(uint32_t index)
 	m_curProgram = index;
 
 	const CVL1Program &program = SharedVL1::GetFactoryPresets()[index];
-	const tParameterRange *ranges = getDsp()->GetSharedData()->parameterRanges;
 
 	for (uint32_t i = 0; i < kNumParams; i++)
 	{
 		// set values for each parameter and update their widgets
 		float value = program.GetParameter(i, HUGE_VALF);
 		if (value == HUGE_VALF)
-			value = ranges[i].def;
+			value = SharedVL1::GetParameterRange(i).def;
 		else
 			value = SharedVL1::ParameterValueFrom01(i, value);
 		parameterChanged(i, value);
