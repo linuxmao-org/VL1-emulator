@@ -20,7 +20,7 @@ const char *PluginVL1::getDescription() const
 
 const char *PluginVL1::getMaker() const noexcept
 {
-	return "PolyValens";
+	return "PolyValens, Jean Pierre Cimalando";
 }
 
 const char *PluginVL1::getHomePage() const
@@ -30,8 +30,7 @@ const char *PluginVL1::getHomePage() const
 
 const char *PluginVL1::getLicense() const noexcept
 {
-#pragma message("TODO decide a license for plugin")
-	return "Not decided";
+	return "http://spdx.org/licenses/CC0-1.0";
 }
 
 uint32_t PluginVL1::getVersion() const noexcept
