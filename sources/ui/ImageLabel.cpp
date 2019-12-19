@@ -12,34 +12,21 @@
 #include "Window.hpp"
 
 ImageLabel::ImageLabel(ImageSkin skin, Widget *group)
-	: Widget(group), fSkin(skin)
+	: CControl(group), fSkin(skin)
 {
 	setSize(skin.getWidth(), skin.getHeight());
 }
 
-void ImageLabel::setValue(double value)
+void ImageLabel::setValue(double value, NotifyMode notify)
 {
-	value = clampToBounds(value);
-
-	if (fValue == value)
-		return;
-
-	fValue = value;
-	if (ValueChangedCallback && fValueNotify)
-		ValueChangedCallback(value);
-	repaint();
-}
-
-void ImageLabel::setValueNotified(bool notified)
-{
-	fValueNotify = notified;
+	CControl::setValue(clampToBounds(value), notify);
 }
 
 void ImageLabel::setValueBounds(double v1, double v2)
 {
 	fValueBound1 = v1;
 	fValueBound2 = v2;
-	setValue(fValue);
+	setValue(getValue());
 }
 
 void ImageLabel::onDisplay()
@@ -55,7 +42,7 @@ void ImageLabel::onDisplay()
 	double v2 = fValueBound2;
 
 	//
-	double value = fValue;
+	double value = getValue();
 	double fill = 0;
 	if (v1 != v2)
 		fill = (value - v1) / (v2 - v1);

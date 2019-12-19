@@ -19,6 +19,7 @@ class KickButton;
 class MultiSwitch;
 class Slider;
 class CLcd;
+class ImageLabel;
 class PluginVL1;
 
 class UIVL1 : public UI, public CControlListener
@@ -57,6 +58,9 @@ private:
 	void AddKey(int id, int idBmp, int x, int y, int nBmp, KickButton **ppKey);
 	void AddHorizontalSwitch(int id, int idBmp, int x, int y, int nPos, int nBmp, MultiSwitch **ppControl);
 	void AddHorizontalSlider(int id, int idBmpBody, int idBmpHandle, int x, int y, Slider **ppControl);
+	void AddTooltip(int id, int idBmp, int x, int y);
+
+	void SetCurrentTooltips();
 
 	Slider *m_pVolume;
 	Slider *m_pBalance;
@@ -81,6 +85,10 @@ private:
 	bool m_bSelectRhythm = false;
 
 	int m_curProgram = 0;
+
+	Point<int> m_lastMousePosition = {};
+
+	std::unique_ptr<std::unique_ptr<ImageLabel>[]> m_tooltips;
 
 	std::list<std::unique_ptr<Widget>> m_subWidgets;
 

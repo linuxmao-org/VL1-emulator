@@ -45,15 +45,22 @@ unsigned ImageSkin::getImageCount() const
 	return fImageCount;
 }
 
-cairo_surface_t *ImageSkin::getImageForRatio(double ratio) const
+unsigned ImageSkin::getIndexForRatio(double ratio) const
 {
 	if (!fSubSurface)
 		makeDecoupage();
 
 	unsigned imageCount = fImageCount;
-	int index = (int)(0.5 + ratio * (imageCount - 1));
-	index = (index < 0) ? 0 : index;
-	index = ((unsigned)index < imageCount) ? index : (imageCount - 1);
+	unsigned index = (int)(0.5 + ratio * (imageCount - 1));
+	index = ((int)index < 0) ? 0 : index;
+	index = (index < imageCount) ? index : (imageCount - 1);
+
+	return index;
+}
+
+cairo_surface_t *ImageSkin::getImageForRatio(double ratio) const
+{
+	unsigned index = getIndexForRatio(ratio);
 	return fSubSurface[index].get();
 }
 

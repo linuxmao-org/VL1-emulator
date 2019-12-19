@@ -24,6 +24,7 @@ public:
 
 	unsigned getImageCount() const;
 
+	unsigned getIndexForRatio(double ratio) const;
 	cairo_surface_t *getImageForRatio(double ratio) const;
 
 	unsigned getWidth() const;

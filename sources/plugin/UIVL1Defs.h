@@ -210,4 +210,97 @@ enum {
 	//kDisplayY = 214,
 	//kDisplayXWidth = 30,
 	//kDisplayHeight = 14
+
+	// Tooltips
+	kTooltipVolume = 0,
+	kTooltipBalance,
+	kTooltipOctave,
+	kTooltipSound,
+	kTooltipMode,
+	kTooltipReset,
+	kTooltipDel,
+	kTooltipTempoUp,
+	kTooltipTempoDown,
+	kTooltipRhythm,
+	kTooltipMlc,
+	kTooltipMusic,
+	kTooltipAutoPlay,
+	kTooltipOneKeyPlay,
+	kTooltipCalFunctionKeys,
+	kTooltipCalNumericKeys,
+	kTooltipRhythmKeys,
+	kTooltipM,
+	kNumTooltips,
+
+	kTooltipVolumeId = 209,
+	kTooltipVolumeX = 400,
+	kTooltipVolumeY = 5,
+
+	kTooltipBalanceId = 210,
+	kTooltipBalanceX = 493,
+	kTooltipBalanceY = 5,
+
+	kTooltipOctaveId = 211,
+	kTooltipOctaveX = 563,
+	kTooltipOctaveY = 5,
+
+	kTooltipSoundId = 212,
+	kTooltipSoundX = 610,
+	kTooltipSoundY = 5,
+
+	kTooltipModeId = 213,
+	kTooltipModeX = 757,
+	kTooltipModeY = 5,
+
+	kTooltipResetId = 214,
+	kTooltipResetX = 444,
+	kTooltipResetY = 47,
+
+	kTooltipDelId = 215,
+	kTooltipDelX = 488,
+	kTooltipDelY = 47,
+
+	kTooltipTempoUpId = 216,
+	kTooltipTempoUpX = 504,
+	kTooltipTempoUpY = 47,
+
+	kTooltipTempoDownId = 217,
+	kTooltipTempoDownX = 532,
+	kTooltipTempoDownY = 47,
+
+	kTooltipRhythmId = 218,
+	kTooltipRhythmX = 584,
+	kTooltipRhythmY = 47,
+
+	kTooltipMlcId = 219,
+	kTooltipMlcX = 628,
+	kTooltipMlcY = 47,
+
+	kTooltipMusicId = 220,
+	kTooltipMusicX = 663,
+	kTooltipMusicY = 47,
+
+	kTooltipAutoPlayId = 221,
+	kTooltipAutoPlayX = 690,
+	kTooltipAutoPlayY = 47,
+
+	kTooltipOneKeyPlayId = 222,
+	kTooltipOneKeyPlayX = 736,
+	kTooltipOneKeyPlayY = 61,
+
+	kTooltipCalFunctionKeysId = 224,
+	kTooltipCalFunctionKeysX = 454,
+	kTooltipCalFunctionKeysY = 47,
+
+	kTooltipCalNumericKeysId = 225,
+	kTooltipCalNumericKeysX = 251,
+	kTooltipCalNumericKeysY = 194,
+
+	kTooltipRhythmKeysId = 226,
+	kTooltipRhythmKeysX = 312,
+	kTooltipRhythmKeysY = 128,
+
+	kTooltipMId = 227,
+	kTooltipMX = 771,
+	kTooltipMY = 68,
 };

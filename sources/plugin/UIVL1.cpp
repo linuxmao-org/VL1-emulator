@@ -17,6 +17,7 @@
 #include "ui/KickButton.h"
 #include "ui/MultiSwitch.h"
 #include "ui/Slider.h"
+#include "ui/ImageLabel.h"
 #include "ui/Lcd.h"
 #include <assert.h>
 
@@ -25,6 +26,7 @@
 
 UIVL1::UIVL1()
 	: UI(getBackgroundSize().getWidth(), getBackgroundSize().getHeight()),
+	  m_tooltips(new std::unique_ptr<ImageLabel>[kNumTooltips]),
 	  m_parameterValues(new float[kNumParams])
 {
 	PluginVL1 *dsp = getDsp();
@@ -100,6 +102,31 @@ UIVL1::UIVL1()
 	m_lcd = new CLcd(this);
 	m_subWidgets.emplace_back(m_lcd);
 	m_lcd->setSize(getWidth(), getHeight());
+
+	// Tooltips
+	AddTooltip(kTooltipVolume,kTooltipVolumeId,kTooltipVolumeX,kTooltipVolumeY);
+	AddTooltip(kTooltipBalance,kTooltipBalanceId,kTooltipBalanceX,kTooltipBalanceY);
+	AddTooltip(kTooltipOctave,kTooltipOctaveId,kTooltipOctaveX,kTooltipOctaveY);
+	AddTooltip(kTooltipSound,kTooltipSoundId,kTooltipSoundX,kTooltipSoundY);
+	AddTooltip(kTooltipMode,kTooltipModeId,kTooltipModeX,kTooltipModeY);
+	AddTooltip(kTooltipReset,kTooltipResetId,kTooltipResetX,kTooltipResetY);
+	AddTooltip(kTooltipDel,kTooltipDelId,kTooltipDelX,kTooltipDelY);
+	AddTooltip(kTooltipTempoUp,kTooltipTempoUpId,kTooltipTempoUpX,kTooltipTempoUpY);
+	AddTooltip(kTooltipTempoDown,kTooltipTempoDownId,kTooltipTempoDownX,kTooltipTempoDownY);
+	AddTooltip(kTooltipRhythm,kTooltipRhythmId,kTooltipRhythmX,kTooltipRhythmY);
+	AddTooltip(kTooltipMlc,kTooltipMlcId,kTooltipMlcX,kTooltipMlcY);
+	AddTooltip(kTooltipMusic,kTooltipMusicId,kTooltipMusicX,kTooltipMusicY);
+	AddTooltip(kTooltipAutoPlay,kTooltipAutoPlayId,kTooltipAutoPlayX,kTooltipAutoPlayY);
+	AddTooltip(kTooltipOneKeyPlay,kTooltipOneKeyPlayId,kTooltipOneKeyPlayX,kTooltipOneKeyPlayY);
+	AddTooltip(kTooltipCalFunctionKeys,kTooltipCalFunctionKeysId,kTooltipCalFunctionKeysX,kTooltipCalFunctionKeysY);
+	AddTooltip(kTooltipCalNumericKeys,kTooltipCalNumericKeysId,kTooltipCalNumericKeysX,kTooltipCalNumericKeysY);
+	AddTooltip(kTooltipRhythmKeys,kTooltipRhythmKeysId,kTooltipRhythmKeysX,kTooltipRhythmKeysY);
+	AddTooltip(kTooltipM,kTooltipMId,kTooltipMX,kTooltipMY);
+
+	for (int i = 0; i < kNumTooltips; ++i)
+	{
+		m_tooltips[i]->hide();
+	}
 }
 
 UIVL1::~UIVL1()
@@ -129,6 +156,7 @@ void UIVL1::parameterChanged(uint32_t index, float value)
 	value = SharedVL1::ParameterValueTo01(index, value);
 
 	float *pValues = m_parameterValues.get();
+	#pragma message("TODO parameter values does not receive the values set by UI")
 
 	pValues[index] = value;
 
@@ -231,6 +259,8 @@ void UIVL1::uiIdle()
 	PluginVL1 *dsp = getDsp();
 
 	m_lcd->Show(dsp->GetLcdScreenData());
+
+	SetCurrentTooltips();
 }
 
 /**
@@ -293,6 +323,7 @@ bool UIVL1::onMouse(const MouseEvent &ev)
 */
 bool UIVL1::onMotion(const MotionEvent &ev)
 {
+	m_lastMousePosition = ev.pos;
 	return false;
 	(void)ev;
 }
@@ -607,6 +638,84 @@ void UIVL1::AddHorizontalSlider(int id, int idBmpBody, int idBmpHandle, int x, i
 	slider->setTag(id);
 	slider->addListener(this);
 	*ppControl = slider;
+}
+
+void UIVL1::AddTooltip(int id, int idBmp, int x, int y)
+{
+	cairo_surface_t *hBmp = BitmapCache::load(idBmp);
+	ImageSkin skin(hBmp, 1, ImageSkin::kOrientationVertical);
+	ImageLabel *label = new ImageLabel(skin, this);
+	m_tooltips[id].reset(label);
+	label->setAbsolutePos(x, y);
+	label->setTag(id);
+}
+
+void UIVL1::SetCurrentTooltips()
+{
+	bool enabled[kNumTooltips] = {};
+
+	int mode = (int)lroundf(SharedVL1::ParameterValueFrom01(kMode, m_pMode->getValue()));
+
+	if (mode != kVL1Off)
+	{
+		int mX = m_lastMousePosition.getX();
+		int mY = m_lastMousePosition.getY();
+
+		struct TipOnHover
+		{
+			CControl *control;
+			unsigned tooltip;
+			bool enableInCalMode;
+		};
+
+		const TipOnHover onHover[] =
+		{
+			{m_pVolume, kTooltipVolume, 0},
+			{m_pBalance, kTooltipBalance, 0},
+			{m_pOctave, kTooltipOctave, 0},
+			{m_pProgramSelector, kTooltipSound, 0},
+			{m_pMode, kTooltipMode, 1},
+
+			{m_pKeyReset, kTooltipReset, 0},
+			{m_pKeyDel, kTooltipDel, 0},
+			{m_pKeyTempoUp, kTooltipTempoUp, 0},
+			{m_pKeyTempoDown, kTooltipTempoDown, 0},
+			{m_pKeyRhythm, kTooltipRhythm, 0},
+			{m_pKeyMLC, kTooltipMlc, 0},
+			{m_pKeyMusic, kTooltipMusic, 0},
+			{m_pKeyAutoPlay, kTooltipAutoPlay, 0},
+
+			{m_pKeyOneKeyPlay1, kTooltipOneKeyPlay, 0},
+			{m_pKeyOneKeyPlay2, kTooltipOneKeyPlay, 0},
+		};
+
+		for (const TipOnHover o : onHover)
+		{
+			if (mode == kVL1Cal && !o.enableInCalMode)
+				continue;
+
+			int x = o.control->getAbsoluteX(), y = o.control->getAbsoluteY();
+			int w = o.control->getWidth(), h = o.control->getHeight();
+			if (mX >= x && mX < x + w && mY >= y && mY < y + h)
+				enabled[o.tooltip] = true;
+		}
+
+		if (mode == kVL1Cal)
+		{
+			enabled[kTooltipCalFunctionKeys] = true;
+			enabled[kTooltipCalNumericKeys] = true;
+			enabled[kTooltipM] = true;
+		}
+		else if (m_bSelectRhythm)
+		{
+			enabled[kTooltipRhythmKeys] = true;
+		}
+	}
+
+	for (int i = 0; i < kNumTooltips; ++i)
+	{
+		m_tooltips[i]->setVisible(enabled[i]);
+	}
 }
 
 // -----------------------------------------------------------------------
