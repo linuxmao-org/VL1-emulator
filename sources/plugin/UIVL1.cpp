@@ -26,17 +26,8 @@
 
 UIVL1::UIVL1()
 	: UI(getBackgroundSize().getWidth(), getBackgroundSize().getHeight()),
-	  m_tooltips(new std::unique_ptr<ImageLabel>[kNumTooltips]),
-	  m_parameterValues(new float[kNumParams])
+	  m_tooltips(new std::unique_ptr<ImageLabel>[kNumTooltips])
 {
-	PluginVL1 *dsp = getDsp();
-	const CSharedData *pShared = dsp->GetSharedData();
-
-	for (uint32_t p=0; p<kNumParams; ++p)
-	{
-		m_parameterValues[p] = pShared->parameterRanges[p].def;
-	}
-
 	// Program Select switch
 	AddHorizontalSwitch(kProgram,kProgSelId,kProgSelX,kProgSelY,kProgSelN,kProgSelN,&m_pProgramSelector);
 
@@ -155,11 +146,6 @@ void UIVL1::parameterChanged(uint32_t index, float value)
 {
 	value = SharedVL1::ParameterValueTo01(index, value);
 
-	float *pValues = m_parameterValues.get();
-	#pragma message("TODO parameter values does not receive the values set by UI")
-
-	pValues[index] = value;
-
 	switch (index)
 	{
 		case kVolume:
@@ -182,36 +168,6 @@ void UIVL1::parameterChanged(uint32_t index, float value)
 			// m_pTune->setValue(value);
 			break;
 	}
-
-	// jpc: to handle the program button: if the parameter set has its ADSR
-	//      equal to one of the presets, set the button to this position,
-	//      otherwise set it to ADSR.
-	int nProgram = -1;
-	for (unsigned i = 0; i < kNumPrograms && nProgram == -1; ++i)
-	{
-		const CVL1Program &program = SharedVL1::GetFactoryPresets()[i];
-		bool bIsSame = true;
-		for (unsigned p = 0; p < kNumParams && bIsSame; ++p)
-		{
-			float value = program.GetParameter(p, HUGE_VALF);
-			bIsSame = (value == HUGE_VALF) || d_isEqual(
-				SharedVL1::ParameterValueTo01(p, pValues[p]),
-				SharedVL1::ParameterValueTo01(p, value));
-		}
-		if (bIsSame)
-		{
-			nProgram = i;
-		}
-	}
-	if (nProgram == -1)
-		nProgram = kProgramAdsr;
-	m_pProgramSelector->setValue(
-		nProgram * (1.0 / (kNumPrograms - 1)), CControl::kDoNotNotify);
-
-	// jpc: set the flag to indicate whether calculator memory will write ADSR
-	PluginVL1 *dsp = getDsp();
-	bool isEditingAdsr = (nProgram == kProgramAdsr);
-	dsp->PerformEditSynchronous([dsp, isEditingAdsr] { dsp->SetEditingAdsr(isEditingAdsr); });
 }
 
 /**
@@ -237,6 +193,13 @@ void UIVL1::programLoaded(uint32_t index)
 			value = SharedVL1::ParameterValueFrom01(i, value);
 		parameterChanged(i, value);
 	}
+
+	m_pProgramSelector->setValue(
+		index * (1.0/(kNumPrograms-1)), CControl::kDoNotNotify);
+
+	PluginVL1 *dsp = getDsp();
+	bool isEditingAdsr = (index == kProgramAdsr);
+	dsp->PerformEditSynchronous([dsp, isEditingAdsr] { dsp->SetEditingAdsr(isEditingAdsr); });
 }
 
 /**
