@@ -70,6 +70,7 @@ bool MultiSwitch::onMouse(const MouseEvent &event)
 			return false;
 
 		fIsDragging = true;
+		beginChangeGesture();
 
 		double fill = 0;
 		if (fOrientation == Horizontal)
@@ -88,6 +89,7 @@ bool MultiSwitch::onMouse(const MouseEvent &event)
 	else if (fIsDragging && !event.press && event.button == 1)
 	{
 		fIsDragging = false;
+		endChangeGesture();
 		return true;
 	}
 

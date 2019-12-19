@@ -50,6 +50,8 @@ protected:
 
 protected:
 	void controlValueChanged(CControl &control) override;
+	void controlBeganChangeGesture(CControl &control) override;
+	void controlEndedChangeGesture(CControl &control) override;
 
 private:
 	static Size<uint> getBackgroundSize();

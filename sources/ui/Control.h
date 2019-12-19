@@ -34,6 +34,10 @@ public:
 	void addListener(CControlListener *cl);
 	void removeListener(CControlListener *cl);
 
+protected:
+	void beginChangeGesture();
+	void endChangeGesture();
+
 private:
 	double fValue = 0;
 	intptr_t fTag = 0;
@@ -46,4 +50,6 @@ public:
 	virtual ~CControlListener() {}
 
 	virtual void controlValueChanged(CControl &) {};
+	virtual void controlBeganChangeGesture(CControl &) {};
+	virtual void controlEndedChangeGesture(CControl &) {};
 };

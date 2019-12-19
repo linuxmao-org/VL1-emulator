@@ -561,6 +561,38 @@ void UIVL1::controlValueChanged(CControl &control)
 	}
 }
 
+void UIVL1::controlBeganChangeGesture(CControl &control)
+{
+	long tag = control.getTag();
+
+	switch (tag)
+	{
+		case kTune: // Control not yet implemented.
+		case kMode:
+		case kOctave:
+		case kBalance:
+		case kVolume:
+			editParameter(tag, true);
+			break;
+	}
+}
+
+void UIVL1::controlEndedChangeGesture(CControl &control)
+{
+	long tag = control.getTag();
+
+	switch (tag)
+	{
+		case kTune: // Control not yet implemented.
+		case kMode:
+		case kOctave:
+		case kBalance:
+		case kVolume:
+			editParameter(tag, false);
+			break;
+	}
+}
+
 // -----------------------------------------------------------------------
 
 void UIVL1::AddKey(int id, int idBmp, int x, int y, int nBmp, KickButton **ppKey)

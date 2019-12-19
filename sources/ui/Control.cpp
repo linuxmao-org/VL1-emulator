@@ -39,3 +39,15 @@ void CControl::removeListener(CControlListener *cl)
 
 	fListeners.erase(it);
 }
+
+void CControl::beginChangeGesture()
+{
+	for (CControlListener *cl : fListeners)
+		cl->controlBeganChangeGesture(*this);
+}
+
+void CControl::endChangeGesture()
+{
+	for (CControlListener *cl : fListeners)
+		cl->controlEndedChangeGesture(*this);
+}
