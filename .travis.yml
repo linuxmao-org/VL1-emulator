@@ -79,7 +79,7 @@ matrix:
         - rm -f VL1-"$_BUILD"/README
         - install -d release
         - zip -9 -r release/VL1-"$_BUILD".zip VL1-"$_BUILD"
-        - echo "A classic analog phaser effect" > description-pak
+        - echo "An emulator of Casio VL-Tone VL1" > description-pak
         - sudo checkinstall --type=debian --install=no --default --pkgname=VL1 --pkgversion="`git describe --abbrev=0 | sed 's/^v//'``git log -n 1 --pretty=format:"+%cd~git%h" --date=short master | sed 's/-//g'`" --pkgarch=amd64 --pkgrelease=0jpc1 --pkglicense=BSL-1.0 --pkggroup=sound --maintainer="jp-dev@inbox.ru" --nodoc
         - sudo mv -f *.deb release/VL1-"$_BUILD".deb
 
