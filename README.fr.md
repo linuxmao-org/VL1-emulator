@@ -25,7 +25,7 @@ Installer les paquets nécessaires :
 - `pkg-config`
 - `libx11-dev`
 - `libcairo2-dev`
-- `libjack-jackd2-dev` or `libjack-dev`
+- `libjack-jackd2-dev` ou `libjack-dev`
 - `mesa-common-dev`
 
 2. Cloner le dépôt et ses sous-modules
