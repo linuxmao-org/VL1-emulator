@@ -10,6 +10,8 @@ Home page: http://www.polyvalens.com/blog/vl-1/
 
 The information from the official page may not represent exactly the current state of this fork.
 
+![Casio VL-1](resources/images/casio_vl1_big.png)
+
 ## Downloads
 
 **Development**
