@@ -8,6 +8,8 @@ Page d'accueil : http://www.polyvalens.com/blog/vl-1/
 
 Les informations écrites sur la page officielle ne représentent pas forcément l'état actuel de ce logiciel dérivé.
 
+![Casio VL-1](resources/images/casio_vl1_big.png)
+
 ## Téléchargements
 
 **En développement**
