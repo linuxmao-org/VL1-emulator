@@ -192,7 +192,8 @@ void CVoice::NoteOn(float frequency, float velocity)
 	//float octave = oct==0? 1.0f : oct==1? 2.0f : 4.0f;
 	float octave = (float)(1 << oct); // jpc
 	m_phaseInc = m_pWave->GetPitchScale()*m_tune*octave*frequency*((float)m_pWave->GetSize()/(sampleRate*oversampling));
-	m_phase = 0.0f;
+	if (m_vca.IsIdle()) // jpc: do not reset phase on retrigger
+		m_phase = 0.0f;
 	m_velocity = velocity;
 	m_vca.Gate(true);
 	//if (!m_bNoteIsOn) m_vca.Reset(); // Skip for legato.

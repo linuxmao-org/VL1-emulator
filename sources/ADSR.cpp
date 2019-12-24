@@ -55,6 +55,8 @@ void CAdsr::Interpolate(float v, const tEnvelopePhaseInfo *pInfo, tEnvelopePhase
 
 void CAdsr::InitializePhase(int phase, const tEnvelopePhaseInfo *pInfo, const tEnvelopePhaseInfo *pInfo2)
 {
+	int previousPhase = m_phase;
+
 	m_phase = phase;
 	m_bScheduleRelease = false;
 
@@ -78,7 +80,8 @@ void CAdsr::InitializePhase(int phase, const tEnvelopePhaseInfo *pInfo, const tE
 	float y0 = phase==kAdsrSustain? pInfo2->lBegin : pInfo->lBegin;
 	float y1 = phase==kAdsrSustain? pInfo2->lEnd : pInfo->lEnd;
 
-	bool bRestart = phase==kAdsrAttack;
+	//bool bRestart = phase==kAdsrAttack;
+	bool bRestart = phase==kAdsrAttack && previousPhase==kAdsrIdle; // jpc
 
 	m_envelope.Initialize(t0,y0,t1,y1,bRestart);
 	//if (phase==kAdsrSustain) m_envelope.LoadAccumulator(pInfo->lEnd);
@@ -89,7 +92,7 @@ void CAdsr::InitializePhase(int phase, const tEnvelopePhaseInfo *pInfo, const tE
 void CAdsr::Gate(bool bGate)
 {
 	m_bGate = bGate;
-	if (m_bGate)
+	if (bGate)
 	{
 		//tEnvelopePhaseInfo info;
 		//Interpolate(m_attack,(tEnvelopePhaseInfo*)&gAttack,info);
