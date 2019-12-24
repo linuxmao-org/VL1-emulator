@@ -441,16 +441,25 @@ void UIVL1::controlValueChanged(CControl &control)
 			if (value!=0)
 			{
 				PluginVL1 *dsp = getDsp();
-				int mode = dsp->GetModeI();
+				bool needUpdateTempo = false;
+
+				dsp->PerformEditSynchronous([dsp, tag, &needUpdateTempo]
+				{
+					int mode = dsp->GetModeI();
+					if (mode==kVL1Play || mode==kVL1Rec)
+					{
+						needUpdateTempo = true;
+					}
+					else if (mode==kVL1Cal)
+					{
+						dsp->Calculator(tag);
+					}
+				});
 
 				// jpc: tempo parameter must be changed from Editor
-				if (mode==kVL1Play || mode==kVL1Rec)
+				if (needUpdateTempo)
 				{
 					setParameterValue01(kTempo, dsp->GetTempoUpDown(tag == kKeyTempoUp));
-				}
-				else if (mode==kVL1Cal)
-				{
-					dsp->PerformEditSynchronous([dsp, tag] { dsp->Calculator(tag); });
 				}
 			}
 			break;
@@ -478,26 +487,29 @@ void UIVL1::controlValueChanged(CControl &control)
 			if (value!=0)
 			{
 				PluginVL1 *dsp = getDsp();
-				int mode = dsp->GetModeI();
+				bool needUpdateTempo = false;
 
-				// jpc: tempo parameter must be changed from Editor
-				if (mode==kVL1Rec)
+				dsp->PerformEditSynchronous([dsp, &needUpdateTempo]()
 				{
-					if (!dsp->IsPlayingDemoSong())
+					int mode = dsp->GetModeI();
+					if (mode==kVL1Rec)
 					{
-						setParameterValue(kTempo,0); // tempo = 0
-
-						dsp->PerformEditSynchronous([dsp]
+						if (!dsp->IsPlayingDemoSong())
 						{
+							needUpdateTempo = true;
 							dsp->Reset();
 							dsp->GetSequencer()->Clear();
-						});
+						};
 					}
-				}
-				else if (mode==kVL1Cal)
-				{
-					dsp->PerformEditSynchronous([dsp] { dsp->Calculator(kKeyMLC); });
-				}
+					else if (mode==kVL1Cal)
+					{
+						dsp->Calculator(kKeyMLC);
+					}
+				});
+
+				// jpc: tempo parameter must be changed from Editor
+				if (needUpdateTempo)
+					setParameterValue(kTempo,0); // tempo = 0
 			}
 			break;
 
