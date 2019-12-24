@@ -50,3 +50,22 @@ make
 sudo make install  # pour installer dans les dossiers système, or
 make install-user  # pour installer dans le dossier utilisateur
 ```
+
+## Journal des modifications
+
+**développement**
+
+- édition de l'image afin d'enlever la marque du fabriquant de l'instrument original
+- gestion de l'enregistrement d'automatisation
+- ajout des info-bulles facilitant la lecture
+- modification des domaines de paramètres afin qu'ils soient compréhensibles pour l'utilisateur
+- résolution de la gestion de la calculatrice et la mémoire ADSR, lorsque la localisation utilise « , » comme séparateur de décimales
+- gestion immédiate des messages MIDI, sans mémoire tampon
+- résolution de potentiels accès mémoire hors limites
+- gestion d'instances multiples dans un même hôte
+- gestion de nouveaux formats et plate-formes
+
+**v1.0.?.?**
+
+- importation du code source depuis l'aval
+- changement de licence en `CC0-1.0 or MIT` par l'auteur PolyValens
