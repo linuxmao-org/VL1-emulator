@@ -55,6 +55,7 @@ make install-user  # pour installer dans le dossier utilisateur
 
 **développement**
 
+- élimination d'un clic audible lorsqu'une voix est redéclenchée
 - édition de l'image afin d'enlever la marque du fabriquant de l'instrument original
 - gestion de l'enregistrement d'automatisation
 - ajout des info-bulles facilitant la lecture

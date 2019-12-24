@@ -57,6 +57,7 @@ make install-user  # to install in the home directory
 
 **development**
 
+- eliminated an audible click when retriggering a voice
 - edited the picture to remove the brand name of the original instrument
 - supported automation recording
 - added tooltips to facilitate reading
