@@ -52,3 +52,22 @@ make
 sudo make install  # to install in system directories, or
 make install-user  # to install in the home directory
 ```
+
+## Changelog
+
+**development**
+
+- edited the picture to remove the brand name of the original instrument
+- supported automation recording
+- added tooltips to facilitate reading
+- changed parameter domains to be human-readable
+- fixed handling of calculator and ADSR memory, on a locale which uses "," as decimal separator
+- immediate handling of MIDI messages, without a buffer
+- resolved potential out-of-bound memory accesses
+- supported multiple instances in the same host
+- supported some new platforms and formats
+
+**v1.0.?.?**
+
+- imported upstream source code
+- relicensed to `CC0-1.0 or MIT` by the author PolyValens
