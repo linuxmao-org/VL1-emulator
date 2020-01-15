@@ -53,7 +53,12 @@ make install-user  # pour installer dans le dossier utilisateur
 
 ## Journal des modifications
 
-**développement**
+**v1.1.0.0**
+
+Cette version marque une nouvelle étape du développement, une modification
+multi-plateformes du code source VSTi d'origine.
+Les fonctionnalités sont quasiment identiques au logiciel original mais pas
+tout à fait, et il reste à implémenter quelques éléments d'importance mineure.
 
 - élimination d'un clic audible lorsqu'une voix est redéclenchée
 - édition de l'image afin d'enlever la marque du fabriquant de l'instrument original

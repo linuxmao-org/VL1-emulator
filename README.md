@@ -55,7 +55,12 @@ make install-user  # to install in the home directory
 
 ## Changelog
 
-**development**
+**v1.1.0.0**
+
+This version is a marker of a new release series, which is a cross-platform
+modification of the original VSTi source code.
+The functionality is mostly but not exactly identical to the original, and there
+remain some minor items to be implemented.
 
 - eliminated an audible click when retriggering a voice
 - edited the picture to remove the brand name of the original instrument
